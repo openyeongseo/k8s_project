@@ -1,0 +1,43 @@
+.searchBar {
+  position: relative; padding: 20px 32px 0;
+}
+.searchInput {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  color: var(--txt); padding: 12px 40px 12px 16px; font-size: 13px;
+  outline: none; transition: border-color .2s; font-family: var(--font-body);
+}
+.searchInput:focus { border-color: var(--acc); }
+.searchInput::placeholder { color: var(--txt3); }
+.searchIcon { position: absolute; right: 48px; top: 50%; transform: translateY(-20%); color: var(--txt3); pointer-events: none; }
+
+.catStrip {
+  display: flex; gap: 8px; padding: 16px 32px; overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+}
+.catStrip::-webkit-scrollbar { height: 0; }
+.chip {
+  background: var(--bg3); border: 1px solid var(--border); color: var(--txt3);
+  padding: 7px 18px; font-size: 12px; letter-spacing: .8px; cursor: pointer; white-space: nowrap; transition: all .2s;
+}
+.chip:hover, .active {
+  background: var(--acc) !important; color: #000 !important;
+  border-color: var(--acc) !important; font-weight: 700;
+}
+
+.listHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+}
+.count { font-size: 13px; color: var(--txt3); }
+.count b { color: var(--txt); }
+.sortRow { display: flex; gap: 4px; }
+.sortBtn { background: none; color: var(--txt3); padding: 5px 10px; font-size: 12px; cursor: pointer; border: 1px solid transparent; transition: all .2s; }
+.sortBtn:hover, .sortActive { color: var(--acc); border-color: var(--border2); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; padding: 0 32px 48px; }
+.empty { text-align: center; padding: 80px; color: var(--txt3); font-size: 16px; }
+
+@media (max-width: 768px) {
+  .searchBar, .catStrip, .listHeader { padding-left: 16px; padding-right: 16px; }
+  .grid { padding: 0 16px 32px; grid-template-columns: repeat(2, 1fr); }
+}

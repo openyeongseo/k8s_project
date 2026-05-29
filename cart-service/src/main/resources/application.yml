@@ -1,0 +1,14 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: cart-service
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+springdoc:
+  swagger-ui.path: /swagger-ui.html
+  api-docs.path: /api-docs
+management:
+  endpoints.web.exposure.include: health,info

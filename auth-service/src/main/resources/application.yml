@@ -1,0 +1,56 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+
+  # MariaDB
+  datasource:
+    url: jdbc:mariadb://mariadb:3306/geunuk_auth?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME:geunuk}
+    password: ${DB_PASSWORD:geunuk1234}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MariaDBDialect
+
+  # Redis (토큰 저장소)
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
+# JWT 설정
+jwt:
+  secret: ${JWT_SECRET:Z2V1bnVrLXNlY3JldC1rZXktZm9yLWp3dC1zaWduaW5n}  # Base64 인코딩된 시크릿
+  access-token-expiry: 1800000    # 30분 (ms)
+  refresh-token-expiry: 604800000 # 7일  (ms)
+
+# 서비스 간 통신 URL (K8s 내부 Service 이름 사용)
+service:
+  point:
+    url: http://point-service:8085
+
+# Swagger
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

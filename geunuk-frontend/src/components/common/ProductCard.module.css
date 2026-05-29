@@ -1,0 +1,47 @@
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  cursor: pointer; transition: all .25s; position: relative; overflow: hidden;
+}
+.card:hover { border-color: var(--acc); transform: translateY(-3px); }
+.card:hover .overlay { opacity: 1; }
+
+.badge { position: absolute; top: 10px; left: 10px; z-index: 2; }
+.wish {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(0,0,0,.6); color: var(--txt3);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.wish:hover, .wished { color: var(--red); background: rgba(255,68,85,.15); }
+
+.imgWrap {
+  width: 100%; aspect-ratio: 1;
+  background: var(--bg3); display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.icon { font-size: 52px; }
+.overlay {
+  position: absolute; inset: 0;
+  background: rgba(200,255,0,.07);
+  opacity: 0; transition: opacity .25s;
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 8px; padding-bottom: 16px;
+}
+.overlayBtn {
+  background: var(--acc); color: #000;
+  padding: 8px 14px; font-size: 11px; font-weight: 700; letter-spacing: .8px;
+  cursor: pointer; transition: background .2s;
+}
+.overlayBtn:hover { background: var(--acc2); }
+
+.info { padding: 14px; }
+.brand { font-size: 10px; letter-spacing: 2px; color: var(--acc); font-weight: 700; margin-bottom: 4px; }
+.name  { font-size: 13px; color: var(--txt); line-height: 1.4; margin-bottom: 8px; font-weight: 500; }
+.priceRow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.price    { font-size: 15px; font-weight: 700; color: #fff; }
+.original { font-size: 11px; color: var(--txt3); text-decoration: line-through; }
+.meta { display: flex; align-items: center; gap: 4px; }
+.stars      { color: #fbbf24; font-size: 11px; letter-spacing: 1px; }
+.ratingNum  { font-size: 12px; font-weight: 700; color: var(--txt2); }
+.reviewCount{ font-size: 11px; color: var(--txt3); }

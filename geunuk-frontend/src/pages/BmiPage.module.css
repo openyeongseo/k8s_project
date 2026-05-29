@@ -1,0 +1,14 @@
+.wrap { padding: 32px; }
+.card { max-width: 480px; background: var(--bg2); border: 1px solid var(--border); padding: 40px; margin-bottom: 40px; }
+.title { font-family: var(--font-title); font-size: 56px; line-height: .9; color: #fff; margin-bottom: 12px; letter-spacing: 2px; }
+.title span { color: var(--acc); }
+.sub { font-size: 13px; color: var(--txt2); margin-bottom: 28px; }
+.inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 4px; }
+.result { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; }
+.bmiNum { font-family: var(--font-title); font-size: 72px; line-height: 1; }
+.bmiGrade { font-family: var(--font-title); font-size: 28px; letter-spacing: 2px; margin-bottom: 12px; }
+.bmiMsg { font-size: 14px; color: var(--txt2); margin-bottom: 8px; }
+.bmiDesc { font-size: 13px; color: var(--txt3); }
+.recSection {}
+.recGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+@media (max-width: 768px) { .wrap { padding: 16px; } .inputs { grid-template-columns: 1fr; } }
