@@ -1,36 +1,29 @@
-.notLogged { text-align: center; padding: 80px; color: var(--txt3); }
-.layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 32px; align-items: start; }
-.sidebar { background: var(--bg2); border: 1px solid var(--border); padding: 20px; }
-.profile { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-.avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--acc); color: #000; font-family: var(--font-title); font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-.profileName { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-.profileEmail { font-size: 11px; color: var(--txt3); margin-bottom: 10px; }
-.pointBadge { display: inline-block; background: rgba(200,255,0,.1); border: 1px solid rgba(200,255,0,.3); color: var(--acc); font-size: 12px; font-weight: 700; padding: 4px 12px; }
-.sideNav { display: flex; flex-direction: column; gap: 2px; }
-.navItem { text-align: left; padding: 10px 12px; color: var(--txt3); font-size: 13px; cursor: pointer; border-left: 2px solid transparent; transition: all .2s; background: none; border-top: none; border-right: none; border-bottom: none; }
-.navItem:hover { color: var(--txt); }
-.navActive { color: var(--acc) !important; border-left-color: var(--acc) !important; background: rgba(200,255,0,.04); }
-.content { background: var(--bg2); border: 1px solid var(--border); padding: 24px; }
-.contentTitle { font-family: var(--font-title); font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-
-.orderRow { display: flex; align-items: center; gap: 12px; padding: 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .2s; }
-.orderRow:hover { background: var(--bg3); }
+.notLogged { max-width: 520px; margin: 55px auto; background: var(--bg3); text-align: center; padding: 68px 20px; color: var(--txt3); }
+.layout { max-width: var(--max); margin: 0 auto; display: grid; grid-template-columns: 254px 1fr; gap: 26px; padding: 35px 32px; align-items: start; }
+.sidebar { border: 1px solid var(--border); padding: 26px 19px 18px; }
+.profile { text-align: center; padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 13px; }
+.avatar { width: 66px; height: 66px; border-radius: 50%; background: var(--acc); color: #111; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.profileName { font-size: 16px; font-weight: 700; color: var(--txt); margin-bottom: 2px; }
+.profileEmail { font-size: 12px; color: var(--txt3); margin-bottom: 13px; }
+.pointBadge { display: inline-block; background: #f3f8dd; border: 1px solid #d5e780; color: #728900; font-size: 13px; font-weight: 700; padding: 6px 13px; }
+.sideNav { display: flex; flex-direction: column; gap: 3px; }
+.navItem { text-align: left; padding: 13px 13px; color: var(--txt2); font-size: 13px; cursor: pointer; border-left: 2px solid transparent; transition: all .2s; }
+.navItem:hover { color: var(--txt); background: var(--bg3); }
+.navActive { color: var(--txt) !important; border-left-color: var(--acc) !important; background: #f6f9e9; font-weight: 700; }
+.content { border: 1px solid var(--border); padding: 29px 30px; min-height: 470px; }
+.contentTitle { font-size: 24px; letter-spacing: -.06em; margin-bottom: 23px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.orderRow { display: flex; align-items: center; gap: 14px; padding: 21px 8px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .2s; }
+.orderRow:hover { background: #fafbf8; }
 .orderInfo { flex: 1; }
-.orderName { font-size: 13px; font-weight: 500; color: var(--txt); margin-bottom: 3px; }
-.orderDate { font-size: 11px; color: var(--txt3); }
-.orderPrice { font-size: 14px; font-weight: 700; color: #fff; margin-right: 8px; white-space: nowrap; }
-
-.pointCard { background: var(--bg3); border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
-.pointBig { font-family: var(--font-title); font-size: 48px; color: var(--acc); line-height: 1; }
-.pointBig span { font-size: 24px; }
-.pointLabel { font-size: 11px; letter-spacing: 2px; color: var(--txt3); margin-top: 4px; }
-.historyTitle { font-size: 12px; letter-spacing: 1.5px; color: var(--txt3); text-transform: uppercase; margin-bottom: 12px; }
-.historyRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-
-.empty { text-align: center; padding: 40px; color: var(--txt3); }
-.wishGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-
-@media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; padding: 16px; }
-  .wishGrid { grid-template-columns: repeat(2, 1fr); }
-}
+.orderName { font-size: 14px; font-weight: 500; color: var(--txt); margin-bottom: 5px; }
+.orderDate { font-size: 12px; color: var(--txt3); }
+.orderPrice { font-size: 15px; font-weight: 700; color: var(--txt); margin-right: 9px; white-space: nowrap; }
+.pointCard { background: var(--bg3); padding: 29px; margin-bottom: 28px; }
+.pointBig { font-size: 45px; font-weight: 800; color: var(--txt); letter-spacing: -.06em; line-height: 1; }
+.pointBig span { font-size: 23px; color: #84a000; margin-left: 4px; }
+.pointLabel { font-size: 12px; color: var(--txt3); margin-top: 9px; }
+.historyTitle { font-size: 13px; font-weight: 700; color: var(--txt2); margin-bottom: 11px; }
+.historyRow { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
+.empty { text-align: center; padding: 48px; color: var(--txt3); background: var(--bg3); }
+.wishGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; padding: 20px 16px; } .wishGrid { grid-template-columns: repeat(2, 1fr); } }

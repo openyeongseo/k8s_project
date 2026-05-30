@@ -1,63 +1,51 @@
-.nav {
-  position: sticky; top: 0; z-index: 200;
-  background: rgba(10,10,10,.96);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 32px; height: 60px;
+.header { position: sticky; top: 0; z-index: 100; background: #fff; box-shadow: 0 1px 0 var(--border); }
+.notice { height: 37px; display: flex; align-items: center; justify-content: center; gap: 5px; background: var(--dark); color: #d8ddd4; font-size: 12px; letter-spacing: .03em; }
+.notice b { color: var(--acc); }
+.main { height: 76px; max-width: var(--max); margin: 0 auto; padding: 0 32px; display: flex; align-items: center; gap: 48px; }
+.logo { display: inline-flex; align-items: center; gap: 10px; color: var(--txt); flex-shrink: 0; }
+.logoMark { height: 38px; width: 38px; display: grid; place-items: center; font-family: var(--font-title); font-size: 29px; color: #111; background: var(--acc); }
+.logoText { font-weight: 800; font-size: 21px; line-height: 1.05; letter-spacing: -.03em; }
+.logoText small { display: block; font-family: var(--font-title); font-size: 12px; letter-spacing: .18em; font-weight: 400; color: var(--txt3); margin-top: 3px; }
+.mainMenu { display: flex; align-items: center; gap: 31px; flex: 1; }
+.mainMenu button { font-size: 14px; font-weight: 500; color: var(--txt2); transition: color .2s; white-space: nowrap; }
+.mainMenu button:hover, .mainMenu .active { color: #111; font-weight: 700; }
+.actions { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.iconBtn { width: 39px; height: 39px; position: relative; display: grid; place-items: center; color: #222; border-radius: 50%; transition: background .2s; }
+.iconBtn:hover { background: var(--bg3); }
+.iconBtn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.iconBtn em { position: absolute; right: 1px; top: 1px; background: var(--acc); color: #111; font-size: 10px; line-height: 17px; font-style: normal; width: 17px; height: 17px; border-radius: 50%; font-weight: 700; }
+.login, .userButton { height: 39px; padding: 0 16px; border: 1px solid var(--dark); font-size: 12px; font-weight: 700; margin-left: 6px; transition: all .2s; }
+.login:hover { background: var(--dark); color: #fff; }
+.userButton { background: var(--dark); color: #fff; }
+.logout { font-size: 12px; color: var(--txt3); padding-left: 5px; }
+.logout:hover { color: var(--txt); }
+.searchBox { max-width: var(--max); padding: 0 32px 18px; margin: 0 auto; display: flex; }
+.searchBox input { flex: 1; height: 50px; border: 1px solid var(--border2); padding: 0 18px; font-size: 14px; outline: none; }
+.searchBox input:focus { border-color: var(--txt); }
+.searchBox button { width: 92px; background: var(--dark); color: #fff; font-weight: 700; }
+.categoryBar { height: 51px; display: flex; justify-content: center; gap: clamp(20px, 4vw, 48px); align-items: center; border-top: 1px solid var(--border); overflow: auto; padding: 0 20px; }
+.categoryBar button { color: var(--txt2); font-size: 13px; white-space: nowrap; }
+.categoryBar button span { margin-left: 12px; color: #afb4ad; }
+.categoryBar button:hover { color: var(--txt); }
+.mobileBtn { display: none; }
+@media (max-width: 1020px) {
+  .main { gap: 18px; padding: 0 18px; }
+  .mainMenu { display: none; }
+  .mainMenu.open { display: flex; flex-direction: column; align-items: stretch; position: fixed; top: 113px; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--border); padding: 18px 22px; gap: 0; }
+  .mainMenu.open button { text-align: left; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .mobileBtn { display: flex; width: 28px; flex-direction: column; gap: 5px; }
+  .mobileBtn span { display: block; width: 22px; height: 2px; background: #222; }
+  .logo { margin-right: auto; }
+  .categoryBar { justify-content: flex-start; }
 }
-.logo {
-  font-family: var(--font-title);
-  font-size: 24px; letter-spacing: 3px; color: var(--acc); cursor: pointer;
-  user-select: none;
-}
-.menu { display: flex; gap: 28px; }
-.menu span {
-  font-size: 12px; letter-spacing: 1.5px; font-weight: 500;
-  color: var(--txt3); cursor: pointer; transition: color .2s; text-transform: uppercase;
-}
-.menu span:hover, .menu span.active { color: var(--txt); }
-.right { display: flex; align-items: center; gap: 4px; }
-.iconBtn {
-  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
-  color: var(--txt3); cursor: pointer; border-radius: 50%; transition: all .2s;
-}
-.iconBtn:hover { color: var(--acc); background: rgba(200,255,0,.06); }
-.cartBtn {
-  width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
-  color: var(--txt3); cursor: pointer; position: relative; border-radius: 50%;
-  transition: all .2s;
-}
-.cartBtn:hover { color: var(--acc); background: rgba(200,255,0,.06); }
-.cartBadge {
-  position: absolute; top: 2px; right: 2px;
-  background: var(--acc); color: #000; border-radius: 50%;
-  width: 16px; height: 16px; font-size: 9px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-}
-.loginBtn {
-  background: var(--acc); color: #000;
-  padding: 7px 16px; font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  cursor: pointer; transition: background .2s; margin-left: 8px;
-}
-.loginBtn:hover { background: var(--acc2); }
-.logoutBtn {
-  background: transparent; border: 1px solid var(--border2);
-  color: var(--txt3); padding: 6px 12px; font-size: 11px;
-  cursor: pointer; transition: all .2s; margin-left: 4px;
-}
-.logoutBtn:hover { border-color: var(--red); color: var(--red); }
-.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; margin-left: 8px; }
-.burger span { display: block; width: 20px; height: 1.5px; background: var(--txt3); transition: all .3s; }
-
-@media (max-width: 768px) {
-  .menu { display: none; }
-  .menu.open {
-    display: flex; flex-direction: column; gap: 0;
-    position: absolute; top: 60px; left: 0; right: 0;
-    background: var(--bg2); border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
-  }
-  .menu.open span { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .burger { display: flex; }
+@media (max-width: 620px) {
+  .notice { font-size: 11px; }
+  .main { height: 67px; padding: 0 12px; }
+  .logoMark { width: 34px; height: 34px; }
+  .logoText { display: none; }
+  .iconBtn:nth-child(2) { display: none; }
+  .login, .userButton { padding: 0 10px; }
+  .logout { display: none; }
+  .categoryBar { height: 47px; }
+  .mainMenu.open { top: 104px; }
 }

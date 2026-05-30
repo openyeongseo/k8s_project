@@ -13,7 +13,7 @@ export default function MyPage() {
   const { show } = useToast();
   const { ids } = useWish();
   const [tab, setTab] = useState('주문 내역');
-  const [profile, setProfile] = useState({ name: user?.name || '준혁', email: user?.email || '', phone: user?.phone || '', address: user?.address || '' });
+  const [profile, setProfile] = useState({ name: user?.name || '한지나', email: user?.email || '', phone: user?.phone || '', address: user?.address || '' });
 
   if (!loggedIn) {
     return (
@@ -35,11 +35,11 @@ export default function MyPage() {
         {/* 사이드바 */}
         <aside className={styles.sidebar}>
           <div className={styles.profile}>
-            <div className={styles.avatar}>{(user?.name || '준')[0]}</div>
-            <div className={styles.profileName}>{user?.name || '준혁'}님</div>
-            <div className={styles.profileEmail}>{user?.email || 'junhyuk@geunuk.kr'}</div>
+            <div className={styles.avatar}>{(user?.name || '한')[0]}</div>
+            <div className={styles.profileName}>{user?.name || '한지나'}님</div>
+            <div className={styles.profileEmail}>{user?.email || 'jina@musclecatch.kr'}</div>
             <div className={styles.pointBadge}>
-              <span>💰</span> {(user?.point || 12450).toLocaleString()}P
+              <span>💰</span> {(user?.point || 100000).toLocaleString()}P
             </div>
           </div>
           <nav className={styles.sideNav}>
@@ -54,7 +54,7 @@ export default function MyPage() {
         </aside>
 
         {/* 콘텐츠 */}
-        <main className={styles.content}>
+        <section className={styles.content}>
           {/* ── 주문 내역 ── */}
           {tab === '주문 내역' && (
             <div>
@@ -79,7 +79,7 @@ export default function MyPage() {
             <div>
               <h2 className={styles.contentTitle}>포인트</h2>
               <div className={styles.pointCard}>
-                <div className={styles.pointBig}>{(user?.point || 12450).toLocaleString()}<span>P</span></div>
+                <div className={styles.pointBig}>{(user?.point || 100000).toLocaleString()}<span>P</span></div>
                 <div className={styles.pointLabel}>보유 포인트</div>
               </div>
               <div className={styles.historyTitle}>포인트 내역</div>
@@ -89,7 +89,7 @@ export default function MyPage() {
                     <div style={{ fontSize: 13, color: 'var(--txt)' }}>{h.desc}</div>
                     <div style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 2 }}>{h.createdAt}</div>
                   </div>
-                  <span style={{ fontWeight: 700, color: h.amount > 0 ? 'var(--acc)' : 'var(--red)' }}>
+                  <span style={{ fontWeight: 700, color: h.amount > 0 ? '#789000' : 'var(--red)' }}>
                     {h.amount > 0 ? '+' : ''}{h.amount.toLocaleString()}P
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export default function MyPage() {
               <button className="btn-primary" onClick={() => show('정보가 저장되었습니다.')}>저장하기</button>
             </div>
           )}
-        </main>
+        </section>
       </div>
     </div>
   );

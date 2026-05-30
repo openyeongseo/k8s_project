@@ -1,17 +1,7 @@
-.wrap {
-  position: fixed; bottom: 24px; right: 24px;
-  z-index: 9999; display: flex; flex-direction: column; gap: 8px;
-}
-.toast {
-  padding: 11px 20px; font-size: 13px; font-weight: 500;
-  letter-spacing: .3px; border: 1px solid;
-  animation: slide .3s ease;
-  min-width: 220px;
-}
-.success { background: var(--bg3); border-color: var(--acc);  color: var(--acc); }
-.error   { background: var(--bg3); border-color: var(--red);  color: var(--red); }
-.info    { background: var(--bg3); border-color: var(--blue); color: var(--blue); }
-@keyframes slide {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
+.wrap { position: fixed; top: 184px; right: 25px; z-index: 500; display: flex; flex-direction: column; gap: 9px; }
+.toast { min-width: 270px; max-width: 355px; padding: 14px 17px; border: 1px solid; box-shadow: 0 8px 28px rgba(0,0,0,.1); background: #fff; font-size: 13px; animation: enter .2s ease; }
+.success { border-color: #cee072; color: #647c00; }
+.error { border-color: #f2b9c1; color: var(--red); }
+.info { border-color: #bdd7fc; color: var(--blue); }
+@keyframes enter { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@media (max-width: 600px) { .wrap { top: auto; right: 14px; left: 14px; bottom: 78px; } .toast { max-width: none; min-width: 0; } }

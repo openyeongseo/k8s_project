@@ -1,5 +1,4 @@
-import { useState, useCallback, createContext, useContext, useEffect } from 'react';
-import { MOCK_USER } from '../data/mock';
+import { useState, useCallback, createContext, useContext } from 'react';
 
 /* ── Cart ──────────────────────────────────── */
 const CartContext = createContext(null);
