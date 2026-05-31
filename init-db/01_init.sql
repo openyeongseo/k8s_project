@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS users (
     name       VARCHAR(50)  NOT NULL,
     phone      VARCHAR(20),
     address    VARCHAR(300),
-    role       VARCHAR(10)  NOT NULL DEFAULT 'USER',
-    status     VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+    role       ENUM('USER','ADMIN')  NOT NULL DEFAULT 'USER',
+    status     ENUM('active','suspended','withdrawn')  NOT NULL DEFAULT 'active',
     created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS oauth_accounts (
     id             BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id        BIGINT       NOT NULL,
-    provider       VARCHAR(20)  NOT NULL,
+    provider       ENUM('google')  NOT NULL,
     provider_id    VARCHAR(200) NOT NULL,
     provider_email VARCHAR(100),
     created_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
