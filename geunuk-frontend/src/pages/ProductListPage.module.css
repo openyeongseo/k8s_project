@@ -5,7 +5,12 @@
 .search input { flex: 1; border: 1px solid var(--border2); padding: 0 18px; font-size: 14px; outline: none; }
 .search input:focus { border-color: var(--txt); }
 .search button { width: 92px; background: var(--dark); color: #fff; font-weight: 700; }
-.filters { max-width: var(--max); margin: 0 auto; padding: 0 32px 21px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: end; gap: 22px; }
+.filters { max-width: var(--max); margin: 0 auto; padding: 0 32px 21px; border-bottom: 1px solid var(--border); }
+.filterTop { display: flex; justify-content: space-between; align-items: end; gap: 22px; }
+.subcategories { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 12px; margin-top: 14px; border-top: 1px dashed var(--border); }
+.subcategories button { min-height: 34px; padding: 0 14px; border: 1px solid var(--border); font-size: 12px; color: var(--txt2); background: #fff; }
+.subcategories button:hover { color: #111; border-color: var(--acc); }
+.subSelected { color: #111 !important; background: var(--acc) !important; border-color: var(--acc) !important; font-weight: 700; }
 .categories { display: flex; flex-wrap: wrap; gap: 8px; }
 .categories button { min-height: 42px; padding: 0 19px; border: 1px solid var(--border); font-size: 13px; color: var(--txt2); background: #fff; }
 .categories .selected, .categories button:hover { color: #111; background: var(--acc); border-color: var(--acc); font-weight: 700; }

@@ -21,6 +21,8 @@
 .google { background: #fff; }
 .naver { color: #fff; background: #03c75a; }
 .kakao { color: #191600; background: #fee500; }
+.googleLogin { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; height: 52px; border: 1px solid #dadce0; background: #fff; border-radius: 6px; font-size: 15px; font-weight: 600; color: #3c4043; margin-top: 8px; }
+.googleLogin:hover { background: #f8f9fa; border-color: #c6c9cc; }
 .switch { text-align: center; font-size: 13px; color: var(--txt3); margin-top: 27px; }
 .switch button { color: #7c9700; font-weight: 700; margin-left: 5px; }
 .signupPage { max-width: 510px; margin: 0 auto; padding: 38px 16px; }

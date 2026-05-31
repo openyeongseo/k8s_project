@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_PRODUCTS } from '../data/mock';
+import { MOCK_PRODUCTS, CATEGORY_MAP } from '../data/mock';
 import ProductCard from '../components/common/ProductCard';
 import { useToast, useWish } from '../store';
 import styles from './BmiPage.module.css';
 
 const GOALS = [
-  { key: 'muscle', label: '근육 증가', category: '스미스머신' },
+  { key: 'muscle', label: '근육 증가', category: '근력기구' },
   { key: 'diet', label: '다이어트', category: '유산소' },
-  { key: 'home', label: '홈트레이닝', category: '홈트레이닝' },
-  { key: 'recovery', label: '회복/스트레칭', category: '리커버리' },
+  { key: 'weight', label: '웨이트트레이닝', category: '웨이트리프팅' },
+  { key: 'recovery', label: '회복/스트레칭', category: '보조 컬렉션' },
 ];
 
 export function BmiPage() {
@@ -18,7 +18,11 @@ export function BmiPage() {
   const [form, setForm] = useState({ height: '', weight: '', age: '', gender: '여성', activity: '보통 활동', goal: 'muscle' });
   const [result, setResult] = useState(null);
   const goal = GOALS.find(item => item.key === form.goal);
-  const recommendations = useMemo(() => result ? MOCK_PRODUCTS.filter(product => product.category === result.category).slice(0, 3) : [], [result]);
+  const recommendations = useMemo(() => {
+    if (!result) return [];
+    const subs = CATEGORY_MAP[result.category] || [result.category];
+    return MOCK_PRODUCTS.filter(p => subs.includes(p.category)).slice(0, 3);
+  }, [result]);
 
   const calculate = e => {
     e.preventDefault();
@@ -28,7 +32,7 @@ export function BmiPage() {
     const bmi = +(weight / (heightM * heightM)).toFixed(1);
     const status = bmi < 18.5 ? '저체중' : bmi < 25 ? '정상' : bmi < 30 ? '과체중' : '비만';
     let category = goal.category;
-    if (status === '과체중' || status === '비만') category = form.goal === 'recovery' ? '리커버리' : '유산소';
+    if (status === '과체중' || status === '비만') category = form.goal === 'recovery' ? '보조 컬렉션' : '유산소';
     setResult({ bmi, status, category });
   };
 

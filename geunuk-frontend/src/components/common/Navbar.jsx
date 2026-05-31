@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { CATEGORIES } from '../../data/mock';
+import { PARENT_CATEGORIES } from '../../data/mock';
 import { useAuth, useCart } from '../../store';
 import styles from './Navbar.module.css';
 
@@ -23,7 +23,7 @@ export default function Navbar() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.notice}>신규 가입 고객 <b>100,000P</b> 지급 · 홈짐 장비 무료 배송 이벤트</div>
+      <div className={styles.notice} onClick={() => nav('/signup')} style={{ cursor: 'pointer' }}>신규 가입 고객 <b>100,000P</b> 지급 · 홈짐 장비 무료 배송 이벤트</div>
       <div className={styles.main}>
         <button className={styles.mobileBtn} onClick={() => setMenuOpen(v => !v)} aria-label="메뉴 열기"><span /><span /><span /></button>
         <Link className={styles.logo} to="/">
@@ -60,7 +60,7 @@ export default function Navbar() {
         </form>
       )}
       <div className={styles.categoryBar}>
-        {CATEGORIES.slice(1).map(category => (
+        {PARENT_CATEGORIES.map(category => (
           <button key={category} onClick={() => nav(`/products?category=${encodeURIComponent(category)}`)}>{category}<span>+</span></button>
         ))}
       </div>

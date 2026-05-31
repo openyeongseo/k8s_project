@@ -5,9 +5,9 @@ import ProductCard from '../components/common/ProductCard';
 import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = [
-  { title: 'STRENGTH ZONE', sub: '근력기구', category: '스미스머신', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80' },
+  { title: 'STRENGTH ZONE', sub: '근력기구', category: '근력기구', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80' },
   { title: 'CARDIO TRAINING', sub: '유산소', category: '유산소', image: 'https://images.unsplash.com/photo-1571019613576-2b22c76fd955?auto=format&fit=crop&w=800&q=80' },
-  { title: 'HOME RECOVERY', sub: '리커버리', category: '리커버리', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80' },
+  { title: 'WEIGHT LIFTING', sub: '웨이트리프팅', category: '웨이트리프팅', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=800&q=80' },
 ];
 
 export default function HomePage() {

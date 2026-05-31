@@ -32,20 +32,30 @@ const IMG = {
 
 export const MOCK_PRODUCTS = [
   { id: 1, name: '올인원 스미스 머신 MC-75', brand: 'MUSCLE CATCH', price: 4990000, original: 5290000, category: '스미스머신', badge: 'BEST', image: IMG.rack, rating: 4.9, reviews: 38, tags: ['홈짐', '근력'] },
-  { id: 2, name: '프로 멀티 케이블 스테이션 X6', brand: 'BODY LAB', price: 4290000, original: null, category: '스미스머신', badge: 'NEW', image: IMG.cable, rating: 4.8, reviews: 19, tags: ['클럽용', '웨이트'] },
-  { id: 3, name: '컴팩트 하프랙 홈짐 세트', brand: 'MUSCLE CATCH', price: 3590000, original: 3890000, category: '스미스머신', badge: 'SALE', image: IMG.gym, rating: 4.7, reviews: 22, tags: ['홈짐', '랙'] },
-  { id: 4, name: 'EMS 스마트 바이크 U80', brand: 'MOVEMENT', price: 269000, original: 329000, category: '유산소', badge: 'SALE', image: IMG.bike, rating: 4.8, reviews: 74, tags: ['사이클', '다이어트'] },
-  { id: 5, name: '무게조절 덤벨 24kg 2개 세트', brand: 'IRON CATCH', price: 389000, original: 449000, category: '덤벨/원판', badge: 'BEST', image: IMG.dumbbell, rating: 4.9, reviews: 106, tags: ['덤벨', '홈트'] },
+  { id: 2, name: '프로 멀티짐 케이블 스테이션 X6', brand: 'BODY LAB', price: 4290000, original: null, category: '멀티짐', badge: 'NEW', image: IMG.cable, rating: 4.8, reviews: 19, tags: ['클럽용', '웨이트'] },
+  { id: 3, name: '컴팩트 멀티랙 홈짐 세트', brand: 'MUSCLE CATCH', price: 3590000, original: 3890000, category: '멀티랙', badge: 'SALE', image: IMG.gym, rating: 4.7, reviews: 22, tags: ['홈짐', '랙'] },
+  { id: 4, name: 'EMS 스마트 바이크 U80', brand: 'MOVEMENT', price: 269000, original: 329000, category: '바이크', badge: 'SALE', image: IMG.bike, rating: 4.8, reviews: 74, tags: ['사이클', '다이어트'] },
+  { id: 5, name: '무게조절 덤벨 24kg 2개 세트', brand: 'IRON CATCH', price: 389000, original: 449000, category: '덤벨', badge: 'BEST', image: IMG.dumbbell, rating: 4.9, reviews: 106, tags: ['덤벨', '홈트'] },
   { id: 6, name: '프로 인클라인 벤치 B-90', brand: 'MUSCLE CATCH', price: 219000, original: null, category: '벤치', badge: 'NEW', image: IMG.training, rating: 4.7, reviews: 31, tags: ['벤치', '근력'] },
-  { id: 7, name: '올림픽 바벨봉 20kg', brand: 'IRON CATCH', price: 139000, original: 159000, category: '덤벨/원판', badge: null, image: IMG.dumbbell, rating: 4.6, reviews: 28, tags: ['바벨', '웨이트'] },
-  { id: 8, name: '폼롤러 리커버리 세트', brand: 'RECOVER FIT', price: 39000, original: 49000, category: '리커버리', badge: 'HOT', image: IMG.stretch, rating: 4.7, reviews: 65, tags: ['스트레칭', '회복'] },
-  { id: 9, name: '파워 리프팅 글러브', brand: 'GRIP LAB', price: 32000, original: null, category: '액세서리', badge: null, image: IMG.apparel, rating: 4.5, reviews: 44, tags: ['장갑', '그립'] },
-  { id: 10, name: '튜빙밴드 트레이닝 키트', brand: 'MOVE ON', price: 29000, original: 39000, category: '홈트레이닝', badge: 'NEW', image: IMG.training, rating: 4.8, reviews: 58, tags: ['밴드', '홈트'] },
-  { id: 11, name: '워킹패드 저소음 런닝머신', brand: 'CARDIO FIT', price: 459000, original: 520000, category: '유산소', badge: 'BEST', image: IMG.gym, rating: 4.7, reviews: 26, tags: ['런닝', '다이어트'] },
-  { id: 12, name: '컴프레션 트레이닝 셋업', brand: 'MUSCLE WEAR', price: 79000, original: 99000, category: '액세서리', badge: 'SALE', image: IMG.apparel, rating: 4.6, reviews: 16, tags: ['의류', '트레이닝'] },
+  { id: 7, name: '올림픽 바벨봉 20kg', brand: 'IRON CATCH', price: 139000, original: 159000, category: '바벨', badge: null, image: IMG.dumbbell, rating: 4.6, reviews: 28, tags: ['바벨', '웨이트'] },
+  { id: 8, name: '폼롤러 마사지 세트', brand: 'RECOVER FIT', price: 39000, original: 49000, category: '마사지', badge: 'HOT', image: IMG.stretch, rating: 4.7, reviews: 65, tags: ['스트레칭', '회복'] },
+  { id: 9, name: '파워 리프팅 스트랩', brand: 'GRIP LAB', price: 32000, original: null, category: '스트랩&패드', badge: null, image: IMG.apparel, rating: 4.5, reviews: 44, tags: ['장갑', '그립'] },
+  { id: 10, name: '케틀벨 트레이닝 키트 32kg', brand: 'IRON CATCH', price: 89000, original: 109000, category: '케틀벨', badge: 'NEW', image: IMG.training, rating: 4.8, reviews: 58, tags: ['케틀벨', '기능성'] },
+  { id: 11, name: '저소음 런닝머신 T9', brand: 'CARDIO FIT', price: 459000, original: 520000, category: '런닝머신', badge: 'BEST', image: IMG.gym, rating: 4.7, reviews: 26, tags: ['런닝', '다이어트'] },
+  { id: 12, name: '컴프레션 트레이닝 셋업', brand: 'MUSCLE WEAR', price: 79000, original: 99000, category: '의류', badge: 'SALE', image: IMG.apparel, rating: 4.6, reviews: 16, tags: ['의류', '트레이닝'] },
 ];
 
-export const CATEGORIES = ['전체', '스미스머신', '벤치', '덤벨/원판', '유산소', '홈트레이닝', '리커버리', '액세서리'];
+export const CATEGORY_MAP = {
+  '근력기구': ['스미스머신', '멀티짐', '멀티랙', '벤치', '벤치프레스'],
+  '유산소': ['런닝머신', '바이크', '로잉&스키트레이너', '일립티컬', '천국의계단', '복싱'],
+  '클럽용': ['핀로딩', '플레이트로딩'],
+  '웨이트리프팅': ['바벨', '플레이트', '덤벨', '케틀벨', '컨디셔닝', '정리대'],
+  '보조 컬렉션': ['어시스트', '스트랩&패드', '매트', '마사지', '케이블어태치', '의류', '부품'],
+};
+
+export const PARENT_CATEGORIES = Object.keys(CATEGORY_MAP);
+
+export const CATEGORIES = ['전체', ...PARENT_CATEGORIES.flatMap(p => CATEGORY_MAP[p])];
 
 export const MOCK_REVIEWS = [
   { id: 1, productId: 1, userName: '김*수', rating: 5, content: '프레임이 단단하고 동작이 부드러워 홈짐 완성도가 높아졌습니다.', createdAt: '2026.05.12' },
