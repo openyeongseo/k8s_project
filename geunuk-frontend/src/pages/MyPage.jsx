@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useToast, useWish } from '../store';
-import { MOCK_ORDERS, MOCK_POINT_HISTORY, MOCK_PRODUCTS, STATUS_LABEL } from '../data/mock';
+import { MOCK_POINT_HISTORY, MOCK_PRODUCTS, STATUS_LABEL } from '../data/mock';
 import ProductCard from '../components/common/ProductCard';
 import styles from './MyPage.module.css';
 
@@ -13,6 +13,8 @@ export default function MyPage() {
   const { show } = useToast();
   const { ids } = useWish();
   const [tab, setTab] = useState('주문 내역');
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
   const [profile, setProfile] = useState({ name: user?.name || '한지나', email: user?.email || '', phone: user?.phone || '', address: user?.address || '' });
 
   if (!loggedIn) {
@@ -25,6 +27,20 @@ export default function MyPage() {
   }
 
   const wishProducts = MOCK_PRODUCTS.filter(p => ids.has(p.id));
+
+  const handleTabClick = (t) => {
+    setTab(t);
+    if (t === '주문 내역') {
+      setOrdersLoading(true);
+      fetch('http://192.168.56.104:8080/api/orders', {
+        headers: { 'Authorization': `Bearer ${user?.accessToken}` }
+      })
+        .then(r => r.json())
+        .then(data => setOrders(data.data?.orders || []))
+        .catch(() => setOrders([]))
+        .finally(() => setOrdersLoading(false));
+    }
+  };
 
   return (
     <div className="page-wrap">
@@ -44,7 +60,7 @@ export default function MyPage() {
           </div>
           <nav className={styles.sideNav}>
             {TABS.map(t => (
-              <button key={t} className={`${styles.navItem} ${tab === t ? styles.navActive : ''}`} onClick={() => setTab(t)}>{t}</button>
+              <button key={t} className={`${styles.navItem} ${tab === t ? styles.navActive : ''}`} onClick={() => handleTabClick(t)}>{t}</button>
             ))}
             <button className={styles.navItem} style={{ color: 'var(--red)', marginTop: 8 }}
               onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); }}>
@@ -59,18 +75,26 @@ export default function MyPage() {
           {tab === '주문 내역' && (
             <div>
               <h2 className={styles.contentTitle}>주문 내역</h2>
-              {MOCK_ORDERS.map(order => (
-                <div key={order.id} className={styles.orderRow} onClick={() => nav(`/orders/${order.id}`)}>
-                  <div className={styles.orderInfo}>
-                    <div className={styles.orderName}>
-                      {order.items[0].name}{order.items.length > 1 ? ` 외 ${order.items.length - 1}건` : ''}
+              {ordersLoading ? (
+                <div className={styles.empty}>불러오는 중...</div>
+              ) : orders.length === 0 ? (
+                <div className={styles.empty}>주문 내역이 없습니다.</div>
+              ) : (
+                orders.map(order => (
+                  <div key={order.id} className={styles.orderRow} onClick={() => nav(`/orders/${order.id}`)}>
+                    <div className={styles.orderInfo}>
+                      <div className={styles.orderName}>
+                        {order.firstItemName}{order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ''}
+                      </div>
+                      <div className={styles.orderDate}>
+                        주문번호 #{order.id} · {new Date(order.createdAt).toLocaleDateString('ko-KR')}
+                      </div>
                     </div>
-                    <div className={styles.orderDate}>주문번호 #{order.id} · {order.createdAt}</div>
+                    <div className={styles.orderPrice}>{Number(order.totalPrice).toLocaleString()}원</div>
+                    <span className={`badge badge-${order.status.toLowerCase()}`}>{STATUS_LABEL[order.status]}</span>
                   </div>
-                  <div className={styles.orderPrice}>{order.totalPrice.toLocaleString()}원</div>
-                  <span className={`badge badge-${order.status.toLowerCase()}`}>{STATUS_LABEL[order.status]}</span>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
