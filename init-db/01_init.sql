@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS oauth_accounts (
 
 -- 테스트 유저 (비밀번호: password123!)
 INSERT IGNORE INTO users (email, password, name, phone, address, role, status)
-VALUES ('test@geunuk.kr', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lL6S', '테스트유저', '010-1234-5678', '서울시 강남구', 'USER', 'active');
+VALUES ('test@geunuk.kr', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lL6S', '테스트유저', '010-1234-5678', '서울시 강남구', 'USER', 'ACTIVE');
 
 -- ── geunuk_product ────────────────────────────────────
 USE geunuk_product;
