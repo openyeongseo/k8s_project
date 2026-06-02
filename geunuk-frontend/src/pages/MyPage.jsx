@@ -63,7 +63,7 @@ export default function MyPage() {
               <button key={t} className={`${styles.navItem} ${tab === t ? styles.navActive : ''}`} onClick={() => handleTabClick(t)}>{t}</button>
             ))}
             <button className={styles.navItem} style={{ color: 'var(--red)', marginTop: 8 }}
-              onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); window.location.reload(); }}>
+              onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); }}>
               로그아웃
             </button>
           </nav>
