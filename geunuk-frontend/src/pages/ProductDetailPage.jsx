@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FALLBACK_IMAGE, MOCK_REVIEWS } from '../data/mock';
 import ProductCard from '../components/common/ProductCard';
-import { useCart, useWish, useToast, useAuth } from '../store';
+import { useWish, useToast, useAuth } from '../store';
 import styles from './ProductDetailPage.module.css';
 
 const TABS = ['상품 정보', '리뷰', '배송/반품', '관련 상품'];
-const API = 'http://192.168.56.104:8080/api/products';
+const API = '/api/products';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const nav = useNavigate();
-  const { add } = useCart();
   const { has, toggle } = useWish();
   const { show } = useToast();
   const { loggedIn, user } = useAuth();
@@ -75,8 +74,22 @@ export default function ProductDetailPage() {
   const options = ['기본 구성', '블랙', '그레이'];
 
   const addCart = () => {
-    add({ ...product, qty });
-    show('장바구니에 담았습니다.');
+    if (!loggedIn || !user?.id) { show('로그인이 필요합니다.', 'error'); nav('/login'); return; }
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': user.id,
+        'Authorization': `Bearer ${user.accessToken}`
+      },
+      body: JSON.stringify({ productId: product.id, quantity: qty })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) show('장바구니에 담았습니다.');
+        else show(data.message || '오류가 발생했습니다.', 'error');
+      })
+      .catch(() => show('서버 오류가 발생했습니다.', 'error'));
   };
   const buyNow = () => {
     nav('/order', { state: { items: [{ productId: product.id, productName: product.name, price: product.price, quantity: qty, image: product.image }] } });

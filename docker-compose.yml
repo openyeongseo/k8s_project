@@ -1,11 +1,5 @@
 version: '3.8'
 
-# ─────────────────────────────────────────────────────
-#  근육캐치 Full Stack - docker compose
-#  실행: docker compose up --build -d
-#  종료: docker compose down -v
-# ─────────────────────────────────────────────────────
-
 networks:
   geunuk-net:
     driver: bridge
@@ -18,8 +12,6 @@ volumes:
 
 services:
 
-  # ── 인프라 ────────────────────────────────────────
-
   mariadb:
     image: mariadb:10.11
     container_name: geunuk-mariadb
@@ -30,7 +22,7 @@ services:
       MYSQL_PASSWORD: geunuk1234
     volumes:
       - mariadb-data:/var/lib/mysql
-      - ./init-db:/docker-entrypoint-initdb.d   # DB 초기화 SQL
+      - ./init-db:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
     networks:
@@ -101,8 +93,6 @@ services:
       test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 15s
       retries: 10
-
-  # ── BE 서비스 ─────────────────────────────────────
 
   auth-service:
     build:
@@ -230,19 +220,10 @@ services:
     networks:
       - geunuk-net
 
-  # ── API Gateway (Nginx) ───────────────────────────
-
   nginx-gateway:
     image: nginx:alpine
     container_name: geunuk-gateway
     restart: unless-stopped
-    depends_on:
-      - auth-service
-      - product-service
-      - order-service
-      - cart-service
-      - point-service
-      - review-service
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
@@ -250,16 +231,12 @@ services:
     networks:
       - geunuk-net
 
-  # ── FE ───────────────────────────────────────────
-
   frontend:
     build:
       context: ./geunuk-frontend
       dockerfile: Dockerfile
     container_name: geunuk-frontend
     restart: unless-stopped
-    depends_on:
-      - nginx-gateway
     ports:
       - "3000:80"
     networks:

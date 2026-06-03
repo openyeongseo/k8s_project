@@ -32,7 +32,7 @@ export default function MyPage() {
     setTab(t);
     if (t === '주문 내역') {
       setOrdersLoading(true);
-      fetch('http://192.168.56.104:8080/api/orders', {
+      fetch('/api/orders', {
         headers: { 'Authorization': `Bearer ${user?.accessToken}` }
       })
         .then(r => r.json())
@@ -63,7 +63,7 @@ export default function MyPage() {
               <button key={t} className={`${styles.navItem} ${tab === t ? styles.navActive : ''}`} onClick={() => handleTabClick(t)}>{t}</button>
             ))}
             <button className={styles.navItem} style={{ color: 'var(--red)', marginTop: 8 }}
-              onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); }}>
+              onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); window.location.reload(); }}>
               로그아웃
             </button>
           </nav>

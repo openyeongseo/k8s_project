@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone      VARCHAR(20),
     address    VARCHAR(300),
     role       ENUM('USER','ADMIN')  NOT NULL DEFAULT 'USER',
-    status     ENUM('active','suspended','withdrawn')  NOT NULL DEFAULT 'active',
+    status     ENUM('ACTIVE','SUSPENDED','WITHDRAWN')  NOT NULL DEFAULT 'ACTIVE',
     created_at DATETIME     DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

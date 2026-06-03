@@ -12,7 +12,7 @@ const GOOGLE_ICON = (
   </svg>
 );
 
-const API = 'http://192.168.56.104:8080/api/auth';
+const API = '/api/auth';
 
 export function LoginPage() {
   const nav = useNavigate();

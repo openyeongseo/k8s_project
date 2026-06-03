@@ -10,8 +10,6 @@ import com.geunuk.product.exception.ProductNotFoundException;
 import com.geunuk.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * [Business Layer]
  * - 비즈니스 로직 처리
- * - Redis 캐시 관리 (@Cacheable, @CacheEvict)
  * - 트랜잭션 경계 설정
  */
 @Slf4j
@@ -39,11 +36,6 @@ public class ProductService {
     // Redis 캐시 키: "products::category::{category}::page::{page}"
     // ──────────────────────────────────────────────
     @Transactional(readOnly = true)
-    @Cacheable(
-        value = "products",
-        key = "'category::' + (#category ?: 'all') + '::page::' + #page + '::size::' + #size",
-        unless = "#result == null"
-    )
     public ProductListResponse getProducts(String category, String keyword, int page, int size) {
         log.info("[ProductService] 상품 목록 조회 - category: {}, keyword: {}, page: {}", category, keyword, page);
 
@@ -61,7 +53,6 @@ public class ProductService {
     // Redis 캐시 키: "product::{id}"
     // ──────────────────────────────────────────────
     @Transactional(readOnly = true)
-    @Cacheable(value = "product", key = "#id")
     public ProductResponse getProduct(Long id) {
         log.info("[ProductService] 상품 단건 조회 - id: {}", id);
 
@@ -80,7 +71,6 @@ public class ProductService {
     // 캐시 전체 무효화
     // ──────────────────────────────────────────────
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
     public ProductResponse createProduct(ProductCreateRequest request) {
         log.info("[ProductService] 상품 등록 - name: {}", request.getName());
 
@@ -103,7 +93,6 @@ public class ProductService {
     // 해당 상품 캐시 + 목록 캐시 무효화
     // ──────────────────────────────────────────────
     @Transactional
-    @CacheEvict(value = {"product", "products"}, allEntries = true)
     public ProductResponse updateProduct(Long id, ProductUpdateRequest request) {
         log.info("[ProductService] 상품 수정 - id: {}", id);
 
@@ -127,7 +116,6 @@ public class ProductService {
     // 상품 삭제 (소프트 딜리트, 관리자)
     // ──────────────────────────────────────────────
     @Transactional
-    @CacheEvict(value = {"product", "products"}, allEntries = true)
     public void deleteProduct(Long id) {
         log.info("[ProductService] 상품 삭제 - id: {}", id);
 

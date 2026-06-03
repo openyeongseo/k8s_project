@@ -5,7 +5,7 @@ import ProductCard from '../components/common/ProductCard';
 import styles from './ProductListPage.module.css';
 
 const SORTS = ['인기순', '신상품순', '낮은가격순', '높은가격순', '리뷰순'];
-const API = 'http://192.168.56.104:8080/api/products';
+const API = '/api/products';
 
 export default function ProductListPage() {
   const nav = useNavigate();
