@@ -1,7 +1,7 @@
 #!/bin/bash
 cd ~/geunuk-compose
-docker compose down
-docker compose up -d
+git pull
+docker compose up -d --build
 echo "⏳ 30초 대기 중..."
 sleep 30
 echo "===== Redis 캐시 초기화 ====="

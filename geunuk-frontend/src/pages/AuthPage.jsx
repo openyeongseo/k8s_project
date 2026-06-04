@@ -35,6 +35,7 @@ export function LoginPage() {
       if (!res.ok) { show(data.message || '이메일 또는 비밀번호가 틀렸습니다.', 'error'); return; }
       login({ 
         id: data.data?.userId,
+        name: data.data?.name || form.email.split('@')[0],
         email: form.email, 
         accessToken: data.data?.accessToken, 
         role: 'USER' 

@@ -38,6 +38,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderEventProducer orderEventProducer;
+    private final PointServiceClient pointServiceClient;
 
     // ──────────────────────────────────────────────
     // 주문 목록 조회 (내 주문)
@@ -131,6 +132,7 @@ public class OrderService {
                         .build()
         );
 
+        pointServiceClient.deductPoint(userId, request.getUsedPoint(), saved.getId());
         return OrderResponse.from(saved);
     }
 
