@@ -1,4 +1,4 @@
-import { useState, useCallback, createContext, useContext } from 'react';
+import { useState, useCallback, createContext, useContext, useRef } from 'react';
 
 /* ── Cart ──────────────────────────────────── */
 const CartContext = createContext(null);
@@ -41,12 +41,19 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  // cart clear 콜백을 외부(CartProvider)에서 주입받기 위한 ref
+  const cartClearRef = useRef(null);
 
   const login = useCallback((userData) => { setUser(userData); setLoggedIn(true); }, []);
-  const logout = useCallback(() => { setUser(null); setLoggedIn(false); }, []);
+  const logout = useCallback(() => {
+    setUser(null);
+    setLoggedIn(false);
+    // cart-service 로그아웃 시 장바구니 초기화 (메모리)
+    if (cartClearRef.current) cartClearRef.current();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loggedIn, login, logout }}>
+    <AuthContext.Provider value={{ user, loggedIn, login, logout, cartClearRef }}>
       {children}
     </AuthContext.Provider>
   );

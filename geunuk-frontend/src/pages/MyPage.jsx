@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useToast, useWish } from '../store';
-import { MOCK_POINT_HISTORY, MOCK_PRODUCTS, STATUS_LABEL } from '../data/mock';
+import { MOCK_PRODUCTS, STATUS_LABEL } from '../data/mock';
 import ProductCard from '../components/common/ProductCard';
 import styles from './MyPage.module.css';
 
 const TABS = ['주문 내역', '포인트', '찜 목록', '내 정보'];
+
+const REASON_LABEL = {
+  SIGNUP: '회원가입 적립',
+  ORDER: '주문 적립',
+  DEDUCT: '포인트 사용',
+  ADMIN: '관리자 지급',
+  REFUND: '환불 적립',
+};
 
 export default function MyPage() {
   const nav = useNavigate();
@@ -13,9 +21,28 @@ export default function MyPage() {
   const { show } = useToast();
   const { ids } = useWish();
   const [tab, setTab] = useState('주문 내역');
+
+  // 주문
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
-  const [profile, setProfile] = useState({ name: user?.name || '한지나', email: user?.email || '', phone: user?.phone || '', address: user?.address || '' });
+
+  // 포인트
+  const [pointBalance, setPointBalance] = useState(null);
+  const [pointHistory, setPointHistory] = useState([]);
+  const [pointLoading, setPointLoading] = useState(false);
+
+  // 내 정보
+  const [profile, setProfile] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
+  });
+
+  const authHeaders = () => ({
+    'X-User-Id': String(user?.id || ''),
+    'Authorization': `Bearer ${user?.accessToken || ''}`,
+  });
 
   if (!loggedIn) {
     return (
@@ -32,15 +59,32 @@ export default function MyPage() {
     setTab(t);
     if (t === '주문 내역') {
       setOrdersLoading(true);
-      fetch('/api/orders', {
-        headers: { 'Authorization': `Bearer ${user?.accessToken}` }
-      })
+      fetch('/api/orders', { headers: authHeaders() })
         .then(r => r.json())
         .then(data => setOrders(data.data?.orders || []))
         .catch(() => setOrders([]))
         .finally(() => setOrdersLoading(false));
     }
+    if (t === '포인트') {
+      setPointLoading(true);
+      Promise.all([
+        fetch('/api/points/balance', { headers: authHeaders() }).then(r => r.json()),
+        fetch('/api/points/history?page=0&size=20', { headers: authHeaders() }).then(r => r.json()),
+      ])
+        .then(([balanceData, historyData]) => {
+          setPointBalance(balanceData.data?.balance ?? 0);
+          // Spring Page 응답: data.content
+          setPointHistory(historyData.data?.content || []);
+        })
+        .catch(() => { setPointBalance(0); setPointHistory([]); })
+        .finally(() => setPointLoading(false));
+    }
   };
+
+  // 마운트 시 주문 내역 첫 로드
+  useEffect(() => {
+    handleTabClick('주문 내역');
+  }, []);
 
   return (
     <div className="page-wrap">
@@ -51,19 +95,22 @@ export default function MyPage() {
         {/* 사이드바 */}
         <aside className={styles.sidebar}>
           <div className={styles.profile}>
-            <div className={styles.avatar}>{(user?.name || '한')[0]}</div>
-            <div className={styles.profileName}>{user?.name || '한지나'}님</div>
-            <div className={styles.profileEmail}>{user?.email || 'jina@musclecatch.kr'}</div>
+            <div className={styles.avatar}>{(user?.name || '?')[0]}</div>
+            <div className={styles.profileName}>{user?.name || ''}님</div>
+            <div className={styles.profileEmail}>{user?.email || ''}</div>
             <div className={styles.pointBadge}>
-              <span>💰</span> {(user?.point || 100000).toLocaleString()}P
+              <span>💰</span> {(pointBalance ?? user?.point ?? 0).toLocaleString()}P
             </div>
           </div>
           <nav className={styles.sideNav}>
             {TABS.map(t => (
               <button key={t} className={`${styles.navItem} ${tab === t ? styles.navActive : ''}`} onClick={() => handleTabClick(t)}>{t}</button>
             ))}
-            <button className={styles.navItem} style={{ color: 'var(--red)', marginTop: 8 }}
-              onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); window.location.reload(); }}>
+            <button
+              className={styles.navItem}
+              style={{ color: 'var(--red)', marginTop: 8 }}
+              onClick={() => { logout(); show('로그아웃되었습니다.'); nav('/'); window.location.reload(); }}
+            >
               로그아웃
             </button>
           </nav>
@@ -91,7 +138,7 @@ export default function MyPage() {
                       </div>
                     </div>
                     <div className={styles.orderPrice}>{Number(order.totalPrice).toLocaleString()}원</div>
-                    <span className={`badge badge-${order.status.toLowerCase()}`}>{STATUS_LABEL[order.status]}</span>
+                    <span className={`badge badge-${order.status?.toLowerCase()}`}>{STATUS_LABEL[order.status]}</span>
                   </div>
                 ))
               )}
@@ -102,22 +149,32 @@ export default function MyPage() {
           {tab === '포인트' && (
             <div>
               <h2 className={styles.contentTitle}>포인트</h2>
-              <div className={styles.pointCard}>
-                <div className={styles.pointBig}>{(user?.point || 100000).toLocaleString()}<span>P</span></div>
-                <div className={styles.pointLabel}>보유 포인트</div>
-              </div>
-              <div className={styles.historyTitle}>포인트 내역</div>
-              {MOCK_POINT_HISTORY.map(h => (
-                <div key={h.id} className={styles.historyRow}>
-                  <div>
-                    <div style={{ fontSize: 13, color: 'var(--txt)' }}>{h.desc}</div>
-                    <div style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 2 }}>{h.createdAt}</div>
+              {pointLoading ? (
+                <div className={styles.empty}>불러오는 중...</div>
+              ) : (
+                <>
+                  <div className={styles.pointCard}>
+                    <div className={styles.pointBig}>{(pointBalance ?? 0).toLocaleString()}<span>P</span></div>
+                    <div className={styles.pointLabel}>보유 포인트</div>
                   </div>
-                  <span style={{ fontWeight: 700, color: h.amount > 0 ? '#789000' : 'var(--red)' }}>
-                    {h.amount > 0 ? '+' : ''}{h.amount.toLocaleString()}P
-                  </span>
-                </div>
-              ))}
+                  <div className={styles.historyTitle}>포인트 내역</div>
+                  {pointHistory.length === 0 ? (
+                    <div className={styles.empty}>포인트 내역이 없습니다.</div>
+                  ) : pointHistory.map(h => (
+                    <div key={h.id} className={styles.historyRow}>
+                      <div>
+                        <div style={{ fontSize: 13, color: 'var(--txt)' }}>{REASON_LABEL[h.reason] || h.reason}</div>
+                        <div style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 2 }}>
+                          {new Date(h.createdAt).toLocaleDateString('ko-KR')} · 잔액 {Number(h.balanceAfter).toLocaleString()}P
+                        </div>
+                      </div>
+                      <span style={{ fontWeight: 700, color: h.amount > 0 ? '#789000' : 'var(--red)' }}>
+                        {h.amount > 0 ? '+' : ''}{Number(h.amount).toLocaleString()}P
+                      </span>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           )}
 
