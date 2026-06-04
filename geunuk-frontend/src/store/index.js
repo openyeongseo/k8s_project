@@ -15,14 +15,11 @@ export function CartProvider({ children }) {
   }, []);
 
   const remove = useCallback(id => setItems(prev => prev.filter(i => i.id !== id)), []);
-
   const updateQty = useCallback((id, qty) => {
     if (qty < 1) return;
     setItems(prev => prev.map(i => i.id === id ? { ...i, qty } : i));
   }, []);
-
   const clear = useCallback(() => setItems([]), []);
-
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
   const count = items.reduce((s, i) => s + i.qty, 0);
 
@@ -38,17 +35,25 @@ export const useCart = () => useContext(CartContext);
 /* ── Auth ──────────────────────────────────── */
 const AuthContext = createContext(null);
 
+const loadUser = () => {
+  try { return JSON.parse(sessionStorage.getItem('user') || 'null'); } catch { return null; }
+};
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loggedIn, setLoggedIn] = useState(false);
-  // cart clear 콜백을 외부(CartProvider)에서 주입받기 위한 ref
+  const [user, setUser] = useState(loadUser);
+  const [loggedIn, setLoggedIn] = useState(() => !!loadUser());
   const cartClearRef = useRef(null);
 
-  const login = useCallback((userData) => { setUser(userData); setLoggedIn(true); }, []);
+  const login = useCallback((userData) => {
+    setUser(userData);
+    setLoggedIn(true);
+    sessionStorage.setItem('user', JSON.stringify(userData));
+  }, []);
+
   const logout = useCallback(() => {
     setUser(null);
     setLoggedIn(false);
-    // cart-service 로그아웃 시 장바구니 초기화 (메모리)
+    sessionStorage.removeItem('user');
     if (cartClearRef.current) cartClearRef.current();
   }, []);
 
@@ -66,7 +71,6 @@ const ToastContext = createContext(null);
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
-
   const show = useCallback((msg, type = 'success') => {
     const id = Date.now();
     setToasts(p => [...p, { id, msg, type }]);
@@ -87,7 +91,6 @@ const WishContext = createContext(null);
 
 export function WishProvider({ children }) {
   const [ids, setIds] = useState(new Set([1, 3, 5]));
-
   const toggle = useCallback(id => {
     setIds(prev => {
       const next = new Set(prev);
