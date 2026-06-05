@@ -77,6 +77,7 @@ public class CartService {
     // 전체 비우기
     public void clearCart(Long userId) {
         log.info("[CartService] 장바구니 전체 삭제 - userId:{}", userId);
-        cartRepository.deleteByUserId(userId);
+        List<CartItem> items = cartRepository.findByUserId(userId);
+        cartRepository.deleteAll(items);
     }
 }
