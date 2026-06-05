@@ -71,6 +71,7 @@ export default function OrderPage() {
       .then(data => {
         if (data.success !== false && data.data) {
           const order = data.data;
+          fetch('/api/cart', { method: 'DELETE', headers: { 'X-User-Id': String(user?.id || ''), 'Authorization': `Bearer ${user?.accessToken || ''}` } });
           show('주문이 완료되었습니다.');
           nav(`/orders/${order.id}`, { state: { order } });
         } else {

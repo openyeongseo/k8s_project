@@ -52,9 +52,15 @@ export default function MyPage() {
       </div>
     );
   }
+  useEffect(() => {
+    if (!user?.id) return;
+    fetch('/api/points/balance', { headers: authHeaders() })
+      .then(r => r.json())
+      .then(data => setPointBalance(data.data?.balance ?? 0))
+      .catch(() => {});
+  }, [user?.id]);
 
   const wishProducts = MOCK_PRODUCTS.filter(p => ids.has(p.id));
-
   const handleTabClick = (t) => {
     setTab(t);
     if (t === '주문 내역') {

@@ -20,11 +20,12 @@ export function CartProvider({ children }) {
     setItems(prev => prev.map(i => i.id === id ? { ...i, qty } : i));
   }, []);
   const clear = useCallback(() => setItems([]), []);
+  const [cartCount, setCartCount] = useState(0);
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const count = items.reduce((s, i) => s + i.qty, 0);
+  const count = cartCount;
 
   return (
-    <CartContext.Provider value={{ items, add, remove, updateQty, clear, total, count }}>
+    <CartContext.Provider value={{ items, add, remove, updateQty, clear, total, count, setCartCount }}>
       {children}
     </CartContext.Provider>
   );

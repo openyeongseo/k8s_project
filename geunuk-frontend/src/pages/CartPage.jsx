@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FALLBACK_IMAGE } from '../data/mock';
-import { useAuth, useToast } from '../store';
+import { useAuth, useToast, useCart } from '../store';
 import styles from './CartPage.module.css';
 
 export default function CartPage() {
   const nav = useNavigate();
   const { user, loggedIn } = useAuth();
   const { show } = useToast();
+  const { setCartCount } = useCart();
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ export default function CartPage() {
       .then(data => {
         const list = data.data?.items || [];
         setItems(list);
+        setCartCount(list.length);
         setChecked(new Set(list.map(i => i.productId)));
       })
       .catch(() => setItems([]))
@@ -72,7 +74,7 @@ export default function CartPage() {
     fetch(`/api/cart/${productId}`, { method: 'DELETE', headers: headers() })
       .then(r => r.json())
       .then(() => {
-        setItems(prev => prev.filter(i => i.productId !== productId));
+        setItems(prev => { const next = prev.filter(i => i.productId !== productId); setCartCount(next.length); return next; });
         setChecked(prev => { const next = new Set(prev); next.delete(productId); return next; });
         show('상품을 삭제했습니다.');
       })
@@ -85,7 +87,7 @@ export default function CartPage() {
       fetch(`/api/cart/${productId}`, { method: 'DELETE', headers: headers() })
     ))
       .then(() => {
-        setItems(prev => prev.filter(i => !checked.has(i.productId)));
+        setItems(prev => { const next = prev.filter(i => !checked.has(i.productId)); setCartCount(next.length); return next; });
         setChecked(new Set());
         show('선택 상품을 삭제했습니다.');
       })
@@ -96,7 +98,7 @@ export default function CartPage() {
   const clearCart = () => {
     fetch('/api/cart', { method: 'DELETE', headers: headers() })
       .then(r => r.json())
-      .then(() => { setItems([]); setChecked(new Set()); show('장바구니를 비웠습니다.'); })
+      .then(() => { setItems([]); setChecked(new Set()); setCartCount(0); show('장바구니를 비웠습니다.'); })
       .catch(() => show('서버 오류가 발생했습니다.', 'error'));
   };
 
