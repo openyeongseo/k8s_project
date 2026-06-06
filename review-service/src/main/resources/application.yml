@@ -4,12 +4,12 @@ spring:
   application:
     name: review-service
   datasource:
-    url: jdbc:mariadb://mariadb:3306/geunuk_review?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-    username: ${DB_USERNAME:geunuk}
-    password: ${DB_PASSWORD:geunuk1234}
+    url: jdbc:mariadb://mariadb.database.svc.cluster.local:3306/bodyx_ecommerce?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mariadb123}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
-    hibernate.ddl-auto: validate
+    hibernate.ddl-auto: none
     show-sql: false
     properties.hibernate.dialect: org.hibernate.dialect.MariaDBDialect
 springdoc:
