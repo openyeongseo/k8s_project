@@ -1,24 +1,26 @@
 package com.geunuk.point.service;
 
-import com.geunuk.point.domain.*;
+import com.geunuk.point.domain.PointBalance;
 import com.geunuk.point.dto.request.PointDeductRequest;
 import com.geunuk.point.dto.request.PointGrantRequest;
 import com.geunuk.point.dto.response.PointBalanceResponse;
 import com.geunuk.point.dto.response.PointHistoryResponse;
 import com.geunuk.point.exception.PointBalanceNotFoundException;
 import com.geunuk.point.repository.PointBalanceRepository;
-import com.geunuk.point.repository.PointTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
 /**
  * [Business Layer]
- * 포인트 적립/차감 - 비관적 락으로 동시성 제어
+ * point_balance / point_transactions 테이블 없음
+ * → member.point 컬럼 직접 조회/업데이트
  */
 @Slf4j
 @Service
@@ -26,36 +28,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointService {
 
     private final PointBalanceRepository balanceRepository;
-    private final PointTransactionRepository txRepository;
 
     // 잔액 조회
     @Transactional(readOnly = true)
     public PointBalanceResponse getBalance(Long userId) {
         PointBalance balance = balanceRepository.findByUserId(userId)
                 .orElse(PointBalance.builder().userId(userId).balance(0L).build());
-        return PointBalanceResponse.builder().userId(userId).balance(balance.getBalance()).build();
+        return PointBalanceResponse.builder()
+                .userId(userId)
+                .balance(balance.getBalance())
+                .build();
     }
 
-    // 포인트 적립 (신규 가입, 구매 적립 등)
+    // 포인트 적립 (신규 가입, 구매 등)
     @Transactional
     public PointBalanceResponse grant(PointGrantRequest request) {
-        log.info("[PointService] 적립 - userId:{}, amount:{}, reason:{}", request.getUserId(), request.getAmount(), request.getReason());
+        log.info("[PointService] 적립 - userId:{}, amount:{}", request.getUserId(), request.getAmount());
 
         PointBalance balance = balanceRepository.findWithLockByUserId(request.getUserId())
-                .orElse(PointBalance.builder().userId(request.getUserId()).build());
+                .orElseThrow(() -> new PointBalanceNotFoundException("포인트 정보가 없습니다."));
 
         balance.add(request.getAmount());
         balanceRepository.save(balance);
 
-        txRepository.save(PointTransaction.builder()
+        return PointBalanceResponse.builder()
                 .userId(request.getUserId())
-                .amount(request.getAmount())
-                .balanceAfter(balance.getBalance())
-                .reason(request.getReason())
-                .referenceId(request.getReferenceId())
-                .build());
-
-        return PointBalanceResponse.builder().userId(request.getUserId()).balance(balance.getBalance()).build();
+                .balance(balance.getBalance())
+                .build();
     }
 
     // 포인트 차감 (주문 사용)
@@ -67,24 +66,18 @@ public class PointService {
                 .orElseThrow(() -> new PointBalanceNotFoundException("포인트 정보가 없습니다."));
 
         balance.deduct(request.getAmount());
+        balanceRepository.save(balance);
 
-        txRepository.save(PointTransaction.builder()
+        return PointBalanceResponse.builder()
                 .userId(userId)
-                .amount(-request.getAmount())   // 음수로 저장
-                .balanceAfter(balance.getBalance())
-                .reason(PointReason.USE)
-                .referenceId(request.getReferenceId())
-                .build());
-
-        return PointBalanceResponse.builder().userId(userId).balance(balance.getBalance()).build();
+                .balance(balance.getBalance())
+                .build();
     }
 
-    // 포인트 내역 조회 (페이징)
+    // 포인트 내역 조회 - point_transactions 없으므로 빈 페이지 반환
     @Transactional(readOnly = true)
     public Page<PointHistoryResponse> getHistory(Long userId, int page, int size) {
-        return txRepository.findByUserId(
-                userId,
-                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
-        ).map(PointHistoryResponse::from);
+        log.info("[PointService] 내역 조회 - userId:{} (point_transactions 테이블 미존재, 빈 결과 반환)", userId);
+        return new PageImpl<>(Collections.emptyList(), PageRequest.of(page, size), 0);
     }
 }

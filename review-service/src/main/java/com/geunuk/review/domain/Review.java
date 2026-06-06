@@ -3,37 +3,52 @@ package com.geunuk.review.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reviews",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "user_id"}))
-@Getter @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor @Builder
+@Table(name = "review")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Review {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_key")
     private Long id;
 
-    @Column(name = "product_id", nullable = false) private Long productId;
-    @Column(name = "user_id", nullable = false)    private Long userId;
+    @Column(name = "item_key", nullable = false)
+    private Long productId;
 
-    @Column(name = "user_name", nullable = false, length = 50)
+    @Column(name = "cust_key")
+    private Long userId;
+
+    // review_writer 컬럼을 userName으로 매핑
+    @Column(name = "review_writer", length = 100)
     private String userName;
 
-    @Column(nullable = false)
-    private Integer rating;   // 1~5
+    // star → rating 매핑
+    @Column(name = "star", nullable = false)
+    @Builder.Default
+    private Integer rating = 0;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10) @Builder.Default
+    // review 테이블에 status 없음 → Transient (논리 삭제 미지원)
+    @Transient
+    @Builder.Default
     private ReviewStatus status = ReviewStatus.ACTIVE;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "review_date")
+    private LocalDate reviewDate;
+
+    @Column(name = "crawled_at")
     private LocalDateTime createdAt;
 
     public void delete()                         { this.status = ReviewStatus.DELETED; }
-    public boolean isOwnedBy(Long userId)        { return this.userId.equals(userId); }
+    public boolean isOwnedBy(Long userId)        { return this.userId != null && this.userId.equals(userId); }
 }

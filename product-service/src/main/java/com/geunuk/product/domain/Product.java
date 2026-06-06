@@ -2,14 +2,12 @@ package com.geunuk.product.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "products")
+@Table(name = "item")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -18,50 +16,71 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_key")
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    // item 테이블에 category_key FK 필요 → 기본값 1로 삽입 (크롤링 DB 기준)
+    @Column(name = "category_key", nullable = false)
+    @Builder.Default
+    private Integer categoryKey = 1;
+
+    @Column(name = "product_name", nullable = false, length = 500)
     private String name;
 
-    @Column(nullable = false, length = 100)
+    // brand는 item 테이블에 없음 → DB 매핑 제외
+    @Transient
     private String brand;
 
-    @Column(columnDefinition = "TEXT")
+    // description은 item 테이블에 없음 → DB 매핑 제외
+    @Transient
     private String description;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    // sale_price는 int → BigDecimal 매핑
+    @Column(name = "sale_price", nullable = false)
+    @Builder.Default
+    private Integer salePrice = 0;
 
-    @Column(name = "original_price", precision = 10, scale = 2)
-    private BigDecimal originalPrice;
+    @Column(name = "original_price")
+    @Builder.Default
+    private Integer originalPriceRaw = 0;
 
-    @Column(nullable = false)
-    private Integer stock;
+    // cnt = 재고 수량
+    @Column(name = "cnt", nullable = false)
+    @Builder.Default
+    private Integer stock = 0;
 
-    @Column(nullable = false, length = 50)
+    // category_key로 매핑하므로 category 문자열은 Transient
+    @Transient
     private String category;
 
-    @Column(name = "image_url", length = 500)
+    @Column(name = "image_url", length = 1000)
     private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    // item 테이블에 status 컬럼 없음 → 항상 ACTIVE
+    @Transient
     @Builder.Default
     private ProductStatus status = ProductStatus.ACTIVE;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    // item 테이블에 created_at 없음 (crawled_at 사용)
+    @Column(name = "crawled_at")
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    // ── 서비스 레이어에서 BigDecimal로 접근하는 메서드 ──
 
-    // 비즈니스 메서드
+    public BigDecimal getPrice() {
+        return salePrice != null ? BigDecimal.valueOf(salePrice) : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getOriginalPrice() {
+        return originalPriceRaw != null ? BigDecimal.valueOf(originalPriceRaw) : BigDecimal.ZERO;
+    }
+
+    // ── 비즈니스 메서드 ──────────────────────────
+
     public void update(String name, String description, BigDecimal price, Integer stock, String category) {
         this.name = name;
         this.description = description;
-        this.price = price;
+        this.salePrice = price != null ? price.intValue() : 0;
         this.stock = stock;
         this.category = category;
     }

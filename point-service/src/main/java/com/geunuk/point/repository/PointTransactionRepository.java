@@ -1,10 +1,8 @@
 package com.geunuk.point.repository;
 
-import com.geunuk.point.domain.PointTransaction;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface PointTransactionRepository extends JpaRepository<PointTransaction, Long> {
-    Page<PointTransaction> findByUserId(Long userId, Pageable pageable);
+/**
+ * point_transactions 테이블 없음 → 사용 안 함
+ * 컴파일 에러 방지용 빈 인터페이스
+ */
+public interface PointTransactionRepository {
 }

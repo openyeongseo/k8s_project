@@ -10,26 +10,19 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-/**
- * [Data Access Layer]
- * JPA Repository - MariaDB 접근
- */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // 삭제되지 않은 상품 단건 조회
-    Optional<Product> findByIdAndStatusNot(Long id, ProductStatus status);
+    // 삭제 상태 없으므로 전체 조회 (item 테이블 기준)
+    Optional<Product> findById(Long id);
 
-    // 카테고리별 + 상태 필터 페이징 조회
-    Page<Product> findByCategoryAndStatusNot(String category, ProductStatus status, Pageable pageable);
+    // status 필터 무시 버전 (item 테이블엔 status 없음)
+    default Optional<Product> findByIdAndStatusNot(Long id, ProductStatus status) {
+        return findById(id);
+    }
 
-    // 상태 필터 전체 페이징 조회
-    Page<Product> findByStatusNot(ProductStatus status, Pageable pageable);
-
-    // 상품명 검색 (LIKE) + 상태 필터
+    // 전체 상품 페이징 (category_key 기반이지만 keyword 검색은 product_name으로)
     @Query("SELECT p FROM Product p " +
-           "WHERE p.status != :status " +
-           "AND (:category IS NULL OR p.category = :category) " +
-           "AND (:keyword IS NULL OR p.name LIKE %:keyword% OR p.brand LIKE %:keyword%)")
+           "WHERE (:keyword IS NULL OR p.name LIKE %:keyword%)")
     Page<Product> searchProducts(
             @Param("status") ProductStatus status,
             @Param("category") String category,

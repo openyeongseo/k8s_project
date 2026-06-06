@@ -6,7 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "order_items")
+@Table(name = "order_detail")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -15,23 +15,33 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_detail_key")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_key", nullable = false)
     private Order order;
 
-    @Column(name = "product_id", nullable = false)
+    @Column(name = "item_key", nullable = false)
     private Long productId;
 
-    @Column(name = "product_name", nullable = false, length = 200)
+    // order_detail에 product_name 없음 → Transient
+    @Transient
     private String productName;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;       // 주문 당시 가격 (스냅샷)
+    @Column(name = "price", nullable = false)
+    @Builder.Default
+    private Integer priceRaw = 0;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    @Column(name = "cnt", nullable = false)
+    @Builder.Default
+    private Integer quantity = 1;
+
+    // ── BigDecimal 호환 메서드 ──
+
+    public BigDecimal getPrice() {
+        return priceRaw != null ? BigDecimal.valueOf(priceRaw) : BigDecimal.ZERO;
+    }
 
     // 연관관계 편의 메서드
     public void assignOrder(Order order) {
@@ -39,6 +49,6 @@ public class OrderItem {
     }
 
     public BigDecimal getSubtotal() {
-        return this.price.multiply(BigDecimal.valueOf(this.quantity));
+        return getPrice().multiply(BigDecimal.valueOf(this.quantity));
     }
 }

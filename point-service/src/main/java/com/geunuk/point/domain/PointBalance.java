@@ -2,23 +2,39 @@ package com.geunuk.point.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
 
-@Entity @Table(name = "point_balance")
-@Getter @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor @Builder
+/**
+ * member 테이블의 point 컬럼을 직접 매핑
+ * point_balance 별도 테이블 없음 → member 테이블 사용
+ */
+@Entity
+@Table(name = "member")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class PointBalance {
 
     @Id
-    private Long userId;       // auth-service users.id와 동일 (공유 PK)
+    @Column(name = "cust_key")
+    private Long userId;
 
-    @Column(nullable = false)
+    @Column(name = "point", nullable = false)
     @Builder.Default
     private Long balance = 0L;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    // member 테이블의 나머지 컬럼은 무시 (insertable=false, updatable=false)
+    @Column(name = "email", insertable = false, updatable = false)
+    private String email;
+
+    @Column(name = "password_hash", insertable = false, updatable = false)
+    private String passwordHash;
+
+    @Column(name = "username", insertable = false, updatable = false)
+    private String username;
+
+    @Column(name = "signout", insertable = false, updatable = false)
+    private Boolean signout;
 
     public void add(long amount) {
         if (amount <= 0) throw new IllegalArgumentException("적립 금액은 0보다 커야 합니다.");
