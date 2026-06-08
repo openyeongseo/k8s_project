@@ -76,12 +76,12 @@ public class ProductService {
 
         Product product = Product.builder()
                 .name(request.getName())
-                .brand(request.getBrand())
-                .description(request.getDescription())
-                .price(request.getPrice())
-                .originalPrice(request.getOriginalPrice())
+                // brand @Transient - skipped
+                // description @Transient - skipped
+                .salePrice(request.getPrice() != null ? request.getPrice().intValue() : 0)
+                .originalPriceRaw(request.getOriginalPrice() != null ? request.getOriginalPrice().intValue() : 0)
                 .stock(request.getStock())
-                .category(request.getCategory())
+                // category @Transient - skipped
                 .imageUrl(request.getImageUrl())
                 .build();
 

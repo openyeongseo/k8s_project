@@ -22,7 +22,7 @@ spring:
 
   data:
     mongodb:
-      uri: ${MONGODB_URI:mongodb://mongodb:27017/geunuk_logs}
+      uri: ${MONGODB_URI:mongodb://mongodb.database.svc.cluster.local:27017/geunuk_logs}
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}

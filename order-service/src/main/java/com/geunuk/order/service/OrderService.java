@@ -88,11 +88,11 @@ public class OrderService {
         // Order 생성
         Order order = Order.builder()
                 .userId(userId)
-                .totalPrice(totalPrice)
-                .receiverName(request.getReceiverName())
-                .receiverPhone(request.getReceiverPhone())
-                .deliveryAddress(request.getDeliveryAddress())
-                .usedPoint(request.getUsedPoint() != null ? request.getUsedPoint() : 0L)
+                .totalPriceRaw(totalPrice.intValue())
+                // receiverName @Transient - skipped
+                // receiverPhone @Transient - skipped
+                // deliveryAddress @Transient - skipped
+                // usedPoint @Transient - skipped
                 .build();
 
         // OrderItem 생성 및 연관관계 설정
@@ -100,8 +100,8 @@ public class OrderService {
             OrderItem item = OrderItem.builder()
                     .order(order)
                     .productId(itemReq.getProductId())
-                    .productName(itemReq.getProductName())
-                    .price(itemReq.getPrice())
+                    // productName @Transient - skipped
+                    .priceRaw(itemReq.getPrice() != null ? itemReq.getPrice().intValue() : 0)
                     .quantity(itemReq.getQuantity())
                     .build();
             order.addOrderItem(item);
