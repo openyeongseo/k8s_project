@@ -20,9 +20,11 @@ spec:
       labels:
         app: auth-service
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
         - name: auth-service
-          image: harbor.geunuk.local/healthshop/auth-service:latest
+          image: 192.168.0.13/k8s_project/auth-service:latest
           ports:
             - containerPort: 8081
           env:

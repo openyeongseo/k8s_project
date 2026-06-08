@@ -20,9 +20,11 @@ spec:
       labels:
         app: product-service
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
         - name: product-service
-          image: harbor.geunuk.local/healthshop/product-service:latest
+          image: 192.168.0.13/k8s_project/product-service:latest
           ports:
             - containerPort: 8082
           env:

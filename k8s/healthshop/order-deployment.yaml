@@ -20,9 +20,11 @@ spec:
       labels:
         app: order-service
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
         - name: order-service
-          image: harbor.geunuk.local/healthshop/order-service:latest
+          image: 192.168.0.13/k8s_project/order-service:latest
           ports:
             - containerPort: 8083
           env:
@@ -31,7 +33,7 @@ spec:
             - name: DB_PASSWORD
               value: "mariadb123"
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "kafka.database.svc.cluster.local:9092"
+              value: "kafka.kafka.svc.cluster.local:9092"
           resources:
             requests:
               cpu: "50m"

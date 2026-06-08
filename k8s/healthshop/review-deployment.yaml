@@ -20,9 +20,11 @@ spec:
       labels:
         app: review-service
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
         - name: review-service
-          image: harbor.geunuk.local/healthshop/review-service:latest
+          image: 192.168.0.13/k8s_project/review-service:latest
           ports:
             - containerPort: 8086
           env:
@@ -32,7 +34,7 @@ spec:
               value: "mariadb123"
           resources:
             requests:
-              cpu: "300m"
+              cpu: "50m"
               memory: "96Mi"
             limits:
               cpu: "200m"
