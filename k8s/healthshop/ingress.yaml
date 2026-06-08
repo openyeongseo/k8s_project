@@ -54,3 +54,10 @@ spec:
                 name: review-service
                 port:
                   number: 8086
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port: 
+                  number: 80
