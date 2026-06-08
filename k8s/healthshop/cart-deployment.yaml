@@ -6,7 +6,7 @@ metadata:
   labels:
     app: cart-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: cart-service
@@ -32,11 +32,11 @@ spec:
               value: "6379"
           resources:
             requests:
-              cpu: "200m"
-              memory: "256Mi"
+              cpu: "300m"
+              memory: "96Mi"
             limits:
-              cpu: "400m"
-              memory: "512Mi"
+              cpu: "200m"
+              memory: "192Mi"
           readinessProbe:
             httpGet:
               path: /actuator/health
