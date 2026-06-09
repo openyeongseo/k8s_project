@@ -32,6 +32,8 @@ spec:
               value: "root"
             - name: DB_PASSWORD
               value: "mariadb123"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb.database.svc.cluster.local:27017/geunuk_logs"
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "kafka.kafka.svc.cluster.local:9092"
           resources:
@@ -77,7 +79,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: order-service
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 5
   metrics:
     - type: Resource

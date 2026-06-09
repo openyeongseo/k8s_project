@@ -29,7 +29,7 @@ spec:
             - containerPort: 8084
           env:
             - name: REDIS_HOST
-              value: "redis-master.database.svc.cluster.local"
+              value: "redis.database.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
           resources:
@@ -75,7 +75,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: cart-service
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 5
   metrics:
     - type: Resource
