@@ -21,12 +21,15 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh """
-                        sonar-scanner \
-                        -Dsonar.projectKey=geunuk-frontend \
-                        -Dsonar.projectName=geunuk-frontend \
-                        -Dsonar.sources=geunuk-frontend/src
-                    """
+                    script {
+                        def scannerHome = tool 'sonar-scanner'
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=geunuk-frontend \
+                            -Dsonar.projectName=geunuk-frontend \
+                            -Dsonar.sources=geunuk-frontend/src
+                        """
+                    }
                 }
             }
             post {
