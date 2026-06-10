@@ -34,22 +34,22 @@ spec:
               value: "mariadb123"
           resources:
             requests:
-              cpu: "50m"
-              memory: "96Mi"
+              cpu: "250m"
+              memory: "256Mi"
             limits:
-              cpu: "200m"
-              memory: "192Mi"
+              cpu: "500m"
+              memory: "512Mi"
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8085
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8085
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 20
 ---
 apiVersion: v1
