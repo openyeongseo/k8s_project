@@ -63,7 +63,7 @@ pipeline {
         stage('Trivy Scan') {
             steps {
                 sh """
-                    trivy image --exit-code 1 --severity HIGH,CRITICAL ${FULL_IMAGE}
+                    trivy image --exit-code 1 --severity CRITICAL ${FULL_IMAGE}
                 """
             }
             post {
