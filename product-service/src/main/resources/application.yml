@@ -21,8 +21,6 @@ spring:
     redis:
       host: ${REDIS_HOST:redis}
       port: ${REDIS_PORT:6379}
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://mongodb.database.svc.cluster.local:27017/geunuk_logs}
   jackson:
     serialization:
       write-dates-as-timestamps: false

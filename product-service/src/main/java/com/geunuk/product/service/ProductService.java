@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductViewLogService productViewLogService; // MongoDB 로그용
 
     // ──────────────────────────────────────────────
     // 상품 목록 조회
-    // Redis 캐시 키: "products::category::{category}::page::{page}"
     // ──────────────────────────────────────────────
     @Transactional(readOnly = true)
     public ProductListResponse getProducts(String category, String keyword, int page, int size) {
@@ -50,7 +47,6 @@ public class ProductService {
 
     // ──────────────────────────────────────────────
     // 상품 단건 조회
-    // Redis 캐시 키: "product::{id}"
     // ──────────────────────────────────────────────
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long id) {
@@ -60,15 +56,11 @@ public class ProductService {
                 .findByIdAndStatusNot(id, ProductStatus.DELETED)
                 .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다. id: " + id));
 
-        // MongoDB에 조회 로그 비동기 저장
-        productViewLogService.saveViewLog(id);
-
         return ProductResponse.from(product);
     }
 
     // ──────────────────────────────────────────────
     // 상품 등록 (관리자)
-    // 캐시 전체 무효화
     // ──────────────────────────────────────────────
     @Transactional
     public ProductResponse createProduct(ProductCreateRequest request) {
@@ -76,12 +68,9 @@ public class ProductService {
 
         Product product = Product.builder()
                 .name(request.getName())
-                // brand @Transient - skipped
-                // description @Transient - skipped
                 .salePrice(request.getPrice() != null ? request.getPrice().intValue() : 0)
                 .originalPriceRaw(request.getOriginalPrice() != null ? request.getOriginalPrice().intValue() : 0)
                 .stock(request.getStock())
-                // category @Transient - skipped
                 .imageUrl(request.getImageUrl())
                 .build();
 
@@ -90,7 +79,6 @@ public class ProductService {
 
     // ──────────────────────────────────────────────
     // 상품 수정 (관리자)
-    // 해당 상품 캐시 + 목록 캐시 무효화
     // ──────────────────────────────────────────────
     @Transactional
     public ProductResponse updateProduct(Long id, ProductUpdateRequest request) {
@@ -108,7 +96,6 @@ public class ProductService {
                 request.getCategory()
         );
 
-        // @Transactional → Dirty Checking으로 자동 save
         return ProductResponse.from(product);
     }
 
@@ -123,6 +110,6 @@ public class ProductService {
                 .findByIdAndStatusNot(id, ProductStatus.DELETED)
                 .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다. id: " + id));
 
-        product.delete(); // status = DELETED (소프트 딜리트)
+        product.delete();
     }
 }
