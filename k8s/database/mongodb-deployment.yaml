@@ -10,29 +10,36 @@ spec:
   selector:
     matchLabels:
       app: mongodb
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
         app: mongodb
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
         - name: mongodb
-          image: mongo:6
+          image: 192.168.0.13/k8s_project/mongodb:4.4
           ports:
             - containerPort: 27017
           env:
             - name: MONGO_INITDB_DATABASE
-              value: "geunuk_logs"
+              value: geunuk_logs
           resources:
             requests:
-              cpu: "50m"
-              memory: "128Mi"
+              cpu: "100m"
+              memory: "256Mi"
             limits:
               cpu: "300m"
               memory: "512Mi"
           volumeMounts:
-            - name: mongodb-data
-              mountPath: /data/db
+            - mountPath: /data/db
+              name: mongodb-data
       volumes:
         - name: mongodb-data
           emptyDir: {}
