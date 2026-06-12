@@ -152,7 +152,7 @@ public class AuthService {
             throw new IllegalArgumentException("만료되었거나 이미 사용된 Refresh Token입니다.");
         }
 
-        User user = userRepository.findByIdAndStatus(userId, UserStatus.ACTIVE)
+        User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         String newAccessToken = jwtProvider.createAccessToken(user.getId(), user.getEmail(), user.getRole().name());
@@ -170,7 +170,7 @@ public class AuthService {
     // ──────────────────────────────────────────────
     @Transactional(readOnly = true)
     public UserResponse getMyInfo(Long userId) {
-        User user = userRepository.findByIdAndStatus(userId, UserStatus.ACTIVE)
+        User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         return UserResponse.from(user);
     }
@@ -182,7 +182,7 @@ public class AuthService {
     public UserResponse updateProfile(Long userId, ProfileUpdateRequest request) {
         log.info("[AuthService] 정보 수정 - userId: {}", userId);
 
-        User user = userRepository.findByIdAndStatus(userId, UserStatus.ACTIVE)
+        User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         user.updateProfile(request.getName(), request.getPhone(), request.getAddress());
@@ -196,7 +196,7 @@ public class AuthService {
     public void changePassword(Long userId, PasswordChangeRequest request) {
         log.info("[AuthService] 비밀번호 변경 - userId: {}", userId);
 
-        User user = userRepository.findByIdAndStatus(userId, UserStatus.ACTIVE)
+        User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -213,7 +213,7 @@ public class AuthService {
     public void withdraw(Long userId, String accessToken) {
         log.info("[AuthService] 회원 탈퇴 - userId: {}", userId);
 
-        User user = userRepository.findByIdAndStatus(userId, UserStatus.ACTIVE)
+        User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         user.withdraw(); // status = WITHDRAWN

@@ -36,6 +36,8 @@ spec:
               value: "redis.database.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
+            - name: REDIS_PASSWORD
+              value: "N9//aySyoXDepw00VHZyv/GkPh3EppjW"
           resources:
             requests:
               cpu: "250m"
