@@ -33,8 +33,8 @@ public class PointBalance {
     @Column(name = "username", insertable = false, updatable = false)
     private String username;
 
-    @Column(name = "signout", insertable = false, updatable = false)
-    private Boolean signout;
+    @Column(name = "withdrawn_at", insertable = false, updatable = false)
+    private java.time.LocalDateTime withdrawnAt;
 
     public void add(long amount) {
         if (amount <= 0) throw new IllegalArgumentException("적립 금액은 0보다 커야 합니다.");

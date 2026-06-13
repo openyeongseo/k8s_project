@@ -36,7 +36,7 @@ public class ProductService {
     public ProductListResponse getProducts(String category, String keyword, int page, int size) {
         log.info("[ProductService] 상품 목록 조회 - category: {}, keyword: {}, page: {}", category, keyword, page);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<ProductResponse> productPage = productRepository
                 .searchProducts(keyword, pageable)

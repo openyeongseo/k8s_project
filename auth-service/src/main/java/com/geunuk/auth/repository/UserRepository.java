@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-    @Query("SELECT u FROM User u WHERE u.id = :id AND u.signout = false")
+    @Query("SELECT u FROM User u WHERE u.id = :id AND u.withdrawnAt IS NULL")
     Optional<User> findActiveById(@Param("id") Long id);
     boolean existsByEmail(String email);
 }

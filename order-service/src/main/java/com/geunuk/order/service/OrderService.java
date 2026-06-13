@@ -11,6 +11,7 @@ import com.geunuk.order.exception.OrderNotFoundException;
 import com.geunuk.order.exception.UnauthorizedOrderAccessException;
 import com.geunuk.order.kafka.producer.OrderCreatedEvent;
 import com.geunuk.order.kafka.producer.OrderEventProducer;
+import org.springframework.lang.Nullable;
 import com.geunuk.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ import java.util.List;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    @Nullable
     private final OrderEventProducer orderEventProducer;
     private final PointServiceClient pointServiceClient;
 
@@ -120,7 +122,7 @@ public class OrderService {
                         .build())
                 .toList();
 
-        orderEventProducer.publishOrderCreated(
+        if (orderEventProducer != null) orderEventProducer.publishOrderCreated(
                 OrderCreatedEvent.builder()
                         .orderId(saved.getId())
                         .userId(saved.getUserId())
