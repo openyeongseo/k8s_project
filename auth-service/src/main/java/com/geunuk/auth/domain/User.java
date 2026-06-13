@@ -67,11 +67,19 @@ public class User {
         this.withdrawnAt = LocalDateTime.now();
     }
 
+    public void linkGoogleSub(String googleSub) {
+        this.googleSub = googleSub;
+    }
+
     public boolean isActive() {
         return this.withdrawnAt == null;
     }
 
     public UserStatus getStatus() {
         return this.withdrawnAt == null ? UserStatus.ACTIVE : UserStatus.WITHDRAWN;
+    }
+
+    public Role getRole() {
+        return Role.USER;
     }
 }

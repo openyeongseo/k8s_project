@@ -1,5 +1,6 @@
 package com.geunuk.auth.controller;
 
+import com.geunuk.auth.dto.request.GoogleLoginRequest;
 import com.geunuk.auth.dto.request.LoginRequest;
 import com.geunuk.auth.dto.request.PasswordChangeRequest;
 import com.geunuk.auth.dto.request.ProfileUpdateRequest;
@@ -8,6 +9,7 @@ import com.geunuk.auth.dto.response.ApiResponse;
 import com.geunuk.auth.dto.response.TokenResponse;
 import com.geunuk.auth.dto.response.UserResponse;
 import com.geunuk.auth.service.AuthService;
+import com.geunuk.auth.service.GoogleOAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -18,11 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * [Presentation Layer]
- * HTTP 요청/응답 처리만 담당
- * userId는 Gateway/Filter에서 검증 후 X-User-Id 헤더로 전달
- */
 @Tag(name = "Auth API", description = "인증/회원 관리 API")
 @RestController
 @RequestMapping("/api/auth")
@@ -30,11 +27,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final GoogleOAuthService googleOAuthService;
 
-    // ──────────────────────────────────────────────
-    // POST /api/auth/signup
-    // ──────────────────────────────────────────────
-    @Operation(summary = "회원가입", description = "이메일/비밀번호로 가입. 가입 완료 시 100,000P 자동 지급.")
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<UserResponse>> signUp(
             @Valid @RequestBody SignUpRequest request
@@ -44,10 +39,7 @@ public class AuthController {
                 .body(ApiResponse.ok("회원가입이 완료되었습니다. 100,000P가 지급되었습니다.", response));
     }
 
-    // ──────────────────────────────────────────────
-    // POST /api/auth/login
-    // ──────────────────────────────────────────────
-    @Operation(summary = "로그인", description = "이메일/비밀번호 로그인. Access Token + Refresh Token 반환.")
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<TokenResponse>> login(
             @Valid @RequestBody LoginRequest request
@@ -56,10 +48,16 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("로그인되었습니다.", response));
     }
 
-    // ──────────────────────────────────────────────
-    // POST /api/auth/logout
-    // ──────────────────────────────────────────────
-    @Operation(summary = "로그아웃", description = "Access Token 블랙리스트 등록 + Refresh Token 삭제.")
+    @Operation(summary = "구글 로그인/회원가입", description = "프론트에서 받은 Google ID Token으로 로그인. 신규 유저면 자동 가입.")
+    @PostMapping("/oauth2/google")
+    public ResponseEntity<ApiResponse<TokenResponse>> googleLogin(
+            @Valid @RequestBody GoogleLoginRequest request
+    ) {
+        TokenResponse response = googleOAuthService.loginWithGoogle(request.getIdToken());
+        return ResponseEntity.ok(ApiResponse.ok("구글 로그인되었습니다.", response));
+    }
+
+    @Operation(summary = "로그아웃")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
@@ -71,10 +69,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("로그아웃되었습니다.", null));
     }
 
-    // ──────────────────────────────────────────────
-    // POST /api/auth/reissue
-    // ──────────────────────────────────────────────
-    @Operation(summary = "토큰 재발급", description = "Refresh Token으로 새 Access Token 발급.")
+    @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse<TokenResponse>> reissue(
             @RequestHeader("Refresh-Token") String refreshToken
@@ -83,10 +78,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    // ──────────────────────────────────────────────
-    // GET /api/auth/me
-    // ──────────────────────────────────────────────
-    @Operation(summary = "내 정보 조회", description = "로그인한 회원의 정보를 반환.")
+    @Operation(summary = "내 정보 조회")
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getMyInfo(
@@ -96,10 +88,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
-    // ──────────────────────────────────────────────
-    // PUT /api/auth/me
-    // ──────────────────────────────────────────────
-    @Operation(summary = "내 정보 수정", description = "이름, 휴대폰, 주소 수정.")
+    @Operation(summary = "내 정보 수정")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> updateProfile(
@@ -110,9 +99,6 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("정보가 수정되었습니다.", response));
     }
 
-    // ──────────────────────────────────────────────
-    // PATCH /api/auth/me/password
-    // ──────────────────────────────────────────────
     @Operation(summary = "비밀번호 변경")
     @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/me/password")
@@ -124,11 +110,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("비밀번호가 변경되었습니다.", null));
     }
 
-    // ──────────────────────────────────────────────
-    // DELETE /api/auth/me
-    // 회원 탈퇴 (소프트 딜리트)
-    // ──────────────────────────────────────────────
-    @Operation(summary = "회원 탈퇴", description = "계정 상태를 WITHDRAWN으로 변경 (소프트 딜리트).")
+    @Operation(summary = "회원 탈퇴")
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> withdraw(
