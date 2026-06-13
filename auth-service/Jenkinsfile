@@ -18,6 +18,21 @@ pipeline {
             }
         }
 
+        stage('Gradle Build') {
+            steps {
+                sh """
+                    cd auth-service
+                    chmod +x gradlew
+                    ./gradlew bootJar --no-daemon -x test
+                """
+            }
+            post {
+                failure {
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Gradle 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                }
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
@@ -27,7 +42,8 @@ pipeline {
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=auth-service \
                             -Dsonar.projectName=auth-service \
-                            -Dsonar.sources=auth-service/src
+                            -Dsonar.sources=auth-service/src \
+                            -Dsonar.java.binaries=auth-service/build/classes
                         """
                     }
                 }
