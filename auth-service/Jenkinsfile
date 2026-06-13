@@ -18,13 +18,17 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
+        stage('Gradle Build') {
             steps {
-                sh "docker build -t ${FULL_IMAGE} ./auth-service"
+                sh """
+                    cd auth-service
+                    chmod +x gradlew
+                    ./gradlew classes --no-daemon -x test
+                """
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Gradle 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -47,6 +51,17 @@ pipeline {
             post {
                 failure {
                     slackSend(channel: '#jenkins', color: 'danger', message: "❌ SonarQube 분석 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${FULL_IMAGE} ./auth-service"
+            }
+            post {
+                failure {
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
