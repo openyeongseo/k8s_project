@@ -18,17 +18,13 @@ pipeline {
             }
         }
 
-        stage('Gradle Build') {
+        stage('Docker Build') {
             steps {
-                sh """
-                    cd auth-service
-                    chmod +x gradlew
-                    ./gradlew bootJar --no-daemon -x test
-                """
+                sh "docker build -t ${FULL_IMAGE} ./auth-service"
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Gradle 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -39,11 +35,15 @@ pipeline {
                     script {
                         def scannerHome = tool 'sonar-scanner'
                         sh """
+                            docker run --rm \
+                            -v \$(pwd)/auth-service:/project \
+                            -e SONAR_HOST_URL=http://192.168.0.13:9000 \
+                            -e SONAR_TOKEN=\$SONAR_AUTH_TOKEN \
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=auth-service \
                             -Dsonar.projectName=auth-service \
-                            -Dsonar.sources=auth-service/src \
-                            -Dsonar.java.binaries=auth-service/build/classes
+                            -Dsonar.sources=/project/src \
+                            -Dsonar.java.binaries=/project/build/classes
                         """
                     }
                 }
@@ -51,17 +51,6 @@ pipeline {
             post {
                 failure {
                     slackSend(channel: '#jenkins', color: 'danger', message: "❌ SonarQube 분석 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                sh "docker build -t ${FULL_IMAGE} ./auth-service"
-            }
-            post {
-                failure {
-                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
