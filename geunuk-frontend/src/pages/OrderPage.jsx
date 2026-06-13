@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FALLBACK_IMAGE } from '../data/mock';
-import { useAuth, useToast } from '../store';
+import { useAuth, useToast, useCart } from '../store';
 import styles from './OrderPage.module.css';
 
 export default function OrderPage() {
@@ -9,6 +9,7 @@ export default function OrderPage() {
   const location = useLocation();
   const { show } = useToast();
   const { user } = useAuth();
+  const { setCartCount } = useCart();
   const items = location.state?.items || [];
 
   const [pointBalance, setPointBalance] = useState(null); // null = 미조회
@@ -72,6 +73,7 @@ export default function OrderPage() {
         if (data.success !== false && data.data) {
           const order = data.data;
           fetch('/api/cart', { method: 'DELETE', headers: { 'X-User-Id': String(user?.id || ''), 'Authorization': `Bearer ${user?.accessToken || ''}` } });
+          setCartCount(0);
           show('주문이 완료되었습니다.');
           nav(`/orders/${order.id}`, { state: { order } });
         } else {

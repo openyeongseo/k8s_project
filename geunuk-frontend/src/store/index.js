@@ -91,7 +91,7 @@ export const useToast = () => useContext(ToastContext);
 const WishContext = createContext(null);
 
 export function WishProvider({ children }) {
-  const [ids, setIds] = useState(new Set([1, 3, 5]));
+  const [ids, setIds] = useState(new Set());
   const toggle = useCallback(id => {
     setIds(prev => {
       const next = new Set(prev);

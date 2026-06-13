@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FALLBACK_IMAGE } from '../data/mock';
 import ProductCard from '../components/common/ProductCard';
-import { useWish, useToast, useAuth } from '../store';
+import { useWish, useToast, useAuth, useCart } from '../store';
 import styles from './ProductDetailPage.module.css';
 
 const TABS = ['상품 정보', '리뷰', '배송/반품', '관련 상품'];
@@ -14,6 +14,7 @@ export default function ProductDetailPage() {
   const { has, toggle } = useWish();
   const { show } = useToast();
   const { loggedIn, user } = useAuth();
+  const { setCartCount } = useCart();
 
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
@@ -150,7 +151,7 @@ export default function ProductDetailPage() {
     })
       .then(r => r.json())
       .then(data => {
-        if (data.success !== false) show('장바구니에 담았습니다.');
+        if (data.success !== false) { setCartCount(c => c + 1); show('장바구니에 담았습니다.'); }
         else show(data.message || '오류가 발생했습니다.', 'error');
       })
       .catch(() => show('서버 오류가 발생했습니다.', 'error'));
@@ -242,7 +243,7 @@ export default function ProductDetailPage() {
                 <article key={review.id}>
                   <strong>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</strong>
                   <b>{review.userName || `사용자 ${review.userId}`}</b>
-                  <time>{new Date(review.createdAt).toLocaleDateString('ko-KR')}</time>
+                  <time>{new Date(review.reviewDate || review.createdAt).toLocaleDateString('ko-KR')}</time>
                   <p>{review.content}</p>
                   {loggedIn && user?.id === review.userId && (
                     <button onClick={() => deleteReview(review.id)} style={{ fontSize: 11, color: 'var(--red)' }}>삭제</button>
