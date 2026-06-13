@@ -3,6 +3,7 @@ package com.geunuk.auth.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -25,35 +26,35 @@ public class User {
     @Column(name = "password_hash", length = 255)
     private String password;
 
-    @Column(name = "username", nullable = false, length = 50)
+    @Column(name = "username", nullable = false, length = 15)
     private String name;
 
-    // member 테이블에 phone, address 컬럼 없음 → DB 매핑 제외
     @Transient
     private String phone;
 
     @Transient
     private String address;
 
-    // member 테이블에 role 컬럼 없음 → 항상 USER로 고정
     @Transient
     @Builder.Default
     private Role role = Role.USER;
 
-    // signout: 0=활성, 1=탈퇴
-    @Column(name = "signout", nullable = false)
-    @Builder.Default
-    private Boolean signout = false;
+    @Column(name = "withdrawn_at")
+    private LocalDateTime withdrawnAt;
+
+    @Column(name = "google_sub", length = 255)
+    private String googleSub;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // ── 비즈니스 메서드 ──────────────────────────
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public void updateProfile(String name, String phone, String address) {
         this.name = name;
-        // phone, address는 DB에 없으므로 메모리만 갱신 (응답 DTO용)
         this.phone = phone;
         this.address = address;
     }
@@ -63,14 +64,14 @@ public class User {
     }
 
     public void withdraw() {
-        this.signout = true;
+        this.withdrawnAt = LocalDateTime.now();
     }
 
     public boolean isActive() {
-        return !this.signout;
+        return this.withdrawnAt == null;
     }
 
     public UserStatus getStatus() {
-        return this.signout ? UserStatus.WITHDRAWN : UserStatus.ACTIVE;
+        return this.withdrawnAt == null ? UserStatus.ACTIVE : UserStatus.WITHDRAWN;
     }
 }
