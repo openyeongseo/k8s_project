@@ -22,8 +22,7 @@ pipeline {
             steps {
                 sh """
                     cd auth-service
-                    chmod +x gradlew
-                    ./gradlew classes --no-daemon -x test
+                    gradle classes --no-daemon -x test
                 """
             }
             post {
