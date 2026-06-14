@@ -84,6 +84,7 @@ public class GoogleOAuthService {
         log.info("[GoogleOAuth] 로그인 완료 - userId: {}", user.getId());
         return TokenResponse.builder()
                 .userId(user.getId())
+                .username(user.getName())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .expiresIn(ACCESS_TOKEN_EXPIRY)
