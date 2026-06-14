@@ -68,7 +68,7 @@ export function LoginPage() {
   const handleGoogleSuccess = (data) => {
     login({
       id: data?.userId,
-      name: data?.name || '구글 사용자',
+      name: data?.username || '구글 사용자',
       email: data?.email || '',
       accessToken: data?.accessToken,
       role: 'USER'
@@ -92,7 +92,7 @@ export function LoginPage() {
       if (!res.ok) { show(data.message || '이메일 또는 비밀번호가 틀렸습니다.', 'error'); return; }
       login({
         id: data.data?.userId,
-        name: data.data?.name || form.email.split('@')[0],
+        name: data.data?.username || form.email.split('@')[0],
         email: form.email,
         accessToken: data.data?.accessToken,
         role: 'USER'
@@ -147,7 +147,7 @@ export function SignupPage() {
   const handleGoogleSuccess = (data) => {
     login({
       id: data?.userId,
-      name: data?.name || '구글 사용자',
+      name: data?.username || '구글 사용자',
       email: data?.email || '',
       accessToken: data?.accessToken,
       role: 'USER'
