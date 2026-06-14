@@ -1,0 +1,85 @@
+# ── 1. MariaDB 자격증명 Secret ──
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mariadb-credentials
+  namespace: healthshop
+type: Opaque
+stringData:
+  username: root
+  password: mariadb123
+---
+# ── 2. ServiceAccount: order-service-sa (권한 있음) ──
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: order-service-sa
+  namespace: healthshop
+---
+# ── 3. ServiceAccount: cart-service-sa (권한 없음) ──
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cart-service-sa
+  namespace: healthshop
+---
+# ── 4. Role: mariadb-credentials Secret을 get/list 할 수 있는 권한 ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mariadb-secret-reader
+  namespace: healthshop
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["mariadb-credentials"]
+    verbs: ["get"]
+---
+# ── 5. RoleBinding: order-service-sa에만 위 Role 부여 ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: order-service-mariadb-access
+  namespace: healthshop
+subjects:
+  - kind: ServiceAccount
+    name: order-service-sa
+    namespace: healthshop
+roleRef:
+  kind: Role
+  name: mariadb-secret-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+# ── 6. 데모 Pod: order-service-sa (권한 있음) ──
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rbac-demo-order
+  namespace: healthshop
+  labels:
+    demo: rbac
+spec:
+  serviceAccountName: order-service-sa
+  containers:
+    - name: kubectl
+      image: 192.168.0.13/k8s_project/kubectl:1.30
+      command: ["sleep", "infinity"]
+  imagePullSecrets:
+    - name: harbor-secret
+---
+# ── 7. 데모 Pod: cart-service-sa (권한 없음) ──
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rbac-demo-cart
+  namespace: healthshop
+  labels:
+    demo: rbac
+spec:
+  serviceAccountName: cart-service-sa
+  containers:
+    - name: kubectl
+      image: 192.168.0.13/k8s_project/kubectl:1.30
+      command: ["sleep", "infinity"]
+  imagePullSecrets:
+    - name: harbor-secret
