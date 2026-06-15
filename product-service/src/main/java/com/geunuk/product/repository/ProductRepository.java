@@ -12,6 +12,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     default Optional<Product> findByIdAndStatusNot(Long id, ProductStatus status) {
         return findById(id);
     }
-    @Query("SELECT p FROM Product p WHERE (:keyword IS NULL OR p.name LIKE %:keyword%)")
-    Page<Product> searchProducts(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.categoryEntity c " +
+            "WHERE (:keyword IS NULL OR p.name LIKE %:keyword%) " +
+            "AND (:category IS NULL OR c.smallCategory = :category)")
+    Page<Product> searchProducts(@Param("keyword") String keyword,
+                                  @Param("category") String category,
+                                  Pageable pageable);
 }

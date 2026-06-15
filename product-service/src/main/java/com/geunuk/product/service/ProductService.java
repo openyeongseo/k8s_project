@@ -39,7 +39,7 @@ public class ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<ProductResponse> productPage = productRepository
-                .searchProducts(keyword, pageable)
+                .searchProducts(keyword, category, pageable)
                 .map(ProductResponse::from);
 
         return ProductListResponse.from(productPage);
