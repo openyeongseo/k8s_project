@@ -24,12 +24,12 @@ spec:
         - name: harbor-secret
       containers:
         - name: cart-service
-          image: 192.168.0.13/k8s_project/cart-service:v1.0-56
+          image: 192.168.0.13/k8s_project/cart-service:v1.0-57
           ports:
             - containerPort: 8084
           env:
             - name: REDIS_HOST
-              value: "redis.database.svc.cluster.local"
+              value: "redis-master.redis-ns.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD
