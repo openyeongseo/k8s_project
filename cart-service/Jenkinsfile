@@ -14,7 +14,19 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [[
+                        $class: 'PathRestriction',
+                        excludedRegions: 'k8s/.*',
+                        includedRegions: ''
+                    ]],
+                    userRemoteConfigs: [[
+                        credentialsId: 'github-credentials',
+                        url: 'https://github.com/openyeongseo/k8s_project.git'
+                    ]]
+                ])
             }
         }
 
