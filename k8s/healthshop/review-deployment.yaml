@@ -24,7 +24,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: review-service
-          image: 192.168.0.13/k8s_project/review-service:v1.0-76
+          image: 192.168.0.13/k8s_project/review-service:v1.0-77
           ports:
             - containerPort: 8086
           env:
