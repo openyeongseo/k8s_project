@@ -114,6 +114,7 @@ pipeline {
                 )]) {
                     sh """
                         git checkout main
+                        git pull origin main --no-rebase
                         sed -i 's|image: ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}:.*|image: ${FULL_IMAGE}|' ${K8S_MANIFEST}
                         git config user.email "jenkins@geunuk.com"
                         git config user.name "Jenkins"
