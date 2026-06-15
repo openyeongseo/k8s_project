@@ -24,7 +24,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: geunuk-frontend
-          image: 192.168.0.13/k8s_project/geunuk-frontend:v1.0-120
+          image: 192.168.0.13/k8s_project/geunuk-frontend:v1.0-121
           ports:
             - containerPort: 80
           resources:
