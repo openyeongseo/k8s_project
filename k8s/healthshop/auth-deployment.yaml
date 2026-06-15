@@ -24,7 +24,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: auth-service
-          image: 192.168.0.13/k8s_project/auth-service:v1.0-95
+          image: 192.168.0.13/k8s_project/auth-service:v1.0-96
           ports:
             - containerPort: 8081
           env:
