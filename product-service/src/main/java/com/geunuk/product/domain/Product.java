@@ -17,6 +17,9 @@ public class Product {
     @Column(name = "category_key", nullable = false)
     @Builder.Default
     private Integer categoryKey = 1;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_key", insertable = false, updatable = false)
+    private Category categoryEntity;
     @Column(name = "product_name", nullable = false, length = 500)
     private String name;
     @Transient
@@ -32,6 +35,7 @@ public class Product {
     @Column(name = "stock_cnt", nullable = false)
     @Builder.Default
     private Integer stock = 0;
+    @Getter(AccessLevel.NONE)
     @Transient
     private String category;
     @Column(name = "image_url", length = 1000)
@@ -46,6 +50,16 @@ public class Product {
     }
     public BigDecimal getOriginalPrice() {
         return originalPriceRaw != null ? BigDecimal.valueOf(originalPriceRaw) : BigDecimal.ZERO;
+    }
+    /**
+     * 카테고리(소분류) 반환 - category_key로 조인된 Category의 small_category 사용
+     * 조인 실패 시 기존 transient category 값을 fallback으로 사용
+     */
+    public String getCategory() {
+        if (categoryEntity != null) {
+            return categoryEntity.getSmallCategory();
+        }
+        return category;
     }
     public void update(String name, String description, BigDecimal price, Integer stock, String category) {
         this.name = name;
