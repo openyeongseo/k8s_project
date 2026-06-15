@@ -24,7 +24,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: order-service
-          image: 192.168.0.13/k8s_project/order-service:v1.0-81
+          image: 192.168.0.13/k8s_project/order-service:v1.0-82
           ports:
             - containerPort: 8083
           env:
