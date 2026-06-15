@@ -29,7 +29,7 @@ spec:
             - containerPort: 8084
           env:
             - name: REDIS_HOST
-              value: "redis.database.svc.cluster.local"
+              value: "redis-master.redis-ns.svc.cluster.local"
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSWORD
