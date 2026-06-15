@@ -8,6 +8,8 @@ import lombok.Getter;
 public class TokenResponse {
     @Schema(description = "사용자 ID")
     private Long userId;
+    @Schema(description = "사용자 이름")
+    private String username;
     @Schema(description = "Access Token (Bearer)")
     private String accessToken;
     @Schema(description = "Refresh Token")

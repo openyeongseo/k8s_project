@@ -107,6 +107,7 @@ public class AuthService {
         log.info("[AuthService] 로그인 완료 - userId: {}", user.getId());
         return TokenResponse.builder()
                 .userId(user.getId())
+                .username(user.getName())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .expiresIn(ACCESS_TOKEN_EXPIRY)
@@ -159,6 +160,7 @@ public class AuthService {
 
         return TokenResponse.builder()
                 .userId(user.getId())
+                .username(user.getName())
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken) // Refresh Token은 그대로 반환
                 .expiresIn(ACCESS_TOKEN_EXPIRY)

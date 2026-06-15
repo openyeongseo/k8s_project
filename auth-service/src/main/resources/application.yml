@@ -30,11 +30,16 @@ spring:
 
 # JWT 설정
 jwt:
-  secret: ${JWT_SECRET:Z2V1bnVrLXNlY3JldC1rZXktZm9yLWp3dC1zaWduaW5n}  # Base64 인코딩된 시크릿
-  access-token-expiry: 1800000    # 30분 (ms)
-  refresh-token-expiry: 604800000 # 7일  (ms)
+  secret: ${JWT_SECRET:Z2V1bnVrLXNlY3JldC1rZXktZm9yLWp3dC1zaWduaW5n}
+  access-token-expiry: 1800000
+  refresh-token-expiry: 604800000
 
-# 서비스 간 통신 URL (K8s 내부 Service 이름 사용)
+# Google OAuth2
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
+
+# 서비스 간 통신 URL
 service:
   point:
     url: http://point-service:8085
@@ -51,7 +56,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true

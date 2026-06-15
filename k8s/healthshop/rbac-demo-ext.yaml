@@ -1,0 +1,61 @@
+# ── 1. MongoDB(review-service) 자격증명 Secret ──
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-credentials
+  namespace: healthshop
+type: Opaque
+stringData:
+  username: bodyx_writer
+  password: writer-pass-1234
+---
+# ── 2. ServiceAccount: review-service-sa ──
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: review-service-sa
+  namespace: healthshop
+---
+# ── 3. Role: mongodb-credentials Secret만 get 가능 ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mongodb-secret-reader
+  namespace: healthshop
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["mongodb-credentials"]
+    verbs: ["get"]
+---
+# ── 4. RoleBinding: review-service-sa에만 부여 ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: review-service-mongodb-access
+  namespace: healthshop
+subjects:
+  - kind: ServiceAccount
+    name: review-service-sa
+    namespace: healthshop
+roleRef:
+  kind: Role
+  name: mongodb-secret-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+# ── 5. 데모 Pod: review-service-sa ──
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rbac-demo-review
+  namespace: healthshop
+  labels:
+    demo: rbac
+spec:
+  serviceAccountName: review-service-sa
+  containers:
+    - name: kubectl
+      image: 192.168.0.13/k8s_project/kubectl:1.30
+      command: ["sleep", "infinity"]
+  imagePullSecrets:
+    - name: harbor-secret

@@ -137,13 +137,13 @@ export default function MyPage() {
                   <div key={order.id} className={styles.orderRow} onClick={() => nav(`/orders/${order.id}`)}>
                     <div className={styles.orderInfo}>
                       <div className={styles.orderName}>
-                        {order.firstItemName}{order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ''}
+                        {order.firstItemName || '(상품명 로딩 중)'}{order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ''}
                       </div>
                       <div className={styles.orderDate}>
                         주문번호 #{order.id} · {new Date(order.createdAt).toLocaleDateString('ko-KR')}
                       </div>
                     </div>
-                    <div className={styles.orderPrice}>{Number(order.totalPrice).toLocaleString()}원</div>
+                    <div className={styles.orderPrice}>{Number(order.totalPrice) > 0 ? `${Number(order.totalPrice).toLocaleString()}원` : '포인트 결제'}</div>
                     <span className={`badge badge-${order.status?.toLowerCase()}`}>{STATUS_LABEL[order.status]}</span>
                   </div>
                 ))

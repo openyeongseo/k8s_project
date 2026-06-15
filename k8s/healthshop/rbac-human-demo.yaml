@@ -1,0 +1,67 @@
+# ── 정은: database 네임스페이스 관리 ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jeongeun-database-admin
+  namespace: database
+subjects:
+  - kind: User
+    name: jeongeun
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+# ── 정은: healthshop의 Secret/ConfigMap 관리 권한 ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: secret-configmap-manager
+  namespace: healthshop
+rules:
+  - apiGroups: [""]
+    resources: ["secrets", "configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jeongeun-secret-configmap-manager
+  namespace: healthshop
+subjects:
+  - kind: User
+    name: jeongeun
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: secret-configmap-manager
+  apiGroup: rbac.authorization.k8s.io
+---
+# ── 영서: healthshop의 Deployment 관리 (Secret 제외) ──
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployment-manager
+  namespace: healthshop
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: yeongseo-deployment-manager
+  namespace: healthshop
+subjects:
+  - kind: User
+    name: yeongseo
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: deployment-manager
+  apiGroup: rbac.authorization.k8s.io

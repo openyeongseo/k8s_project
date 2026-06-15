@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { FALLBACK_IMAGE, MOCK_ORDERS, STATUS_LABEL } from '../data/mock';
-import { useToast } from '../store';
+import { FALLBACK_IMAGE, STATUS_LABEL } from '../data/mock';
+import { useToast, useAuth } from '../store';
 import styles from './OrderDetailPage.module.css';
 
 const STEPS = ['PENDING', 'CONFIRMED', 'SHIPPING', 'COMPLETED'];
@@ -11,7 +11,27 @@ export default function OrderDetailPage() {
   const location = useLocation();
   const nav = useNavigate();
   const { show } = useToast();
-  const order = location.state?.order || MOCK_ORDERS.find(item => item.id === Number(id)) || MOCK_ORDERS[0];
+  const { user } = useAuth();
+  const [order, setOrder] = useState(location.state?.order || null);
+  const [loading, setLoading] = useState(!location.state?.order);
+
+  useEffect(() => {
+    if (location.state?.order) return;
+    fetch(`/api/orders/${id}`, {
+      headers: {
+        'X-User-Id': String(user?.id || ''),
+        'Authorization': `Bearer ${user?.accessToken || ''}`,
+      },
+    })
+      .then(r => r.json())
+      .then(data => { if (data.data) setOrder(data.data); })
+      .catch(() => show('주문 정보를 불러오지 못했습니다.', 'error'))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <div className="page-wrap"><p style={{ padding: 40 }}>불러오는 중...</p></div>;
+  if (!order) return <div className="page-wrap"><p style={{ padding: 40 }}>주문 정보를 찾을 수 없습니다.</p></div>;
+
   const stepIndex = STEPS.indexOf(order.status);
   const isCancelled = order.status === 'CANCELLED';
 
@@ -30,11 +50,11 @@ export default function OrderDetailPage() {
         <div className={styles.columns}>
           <section className={styles.section}>
             <h2>주문 상품</h2>
-            {order.items.map((item, index) => <article className={styles.item} key={index}><img src={item.image || FALLBACK_IMAGE} alt="" onError={e => { e.currentTarget.src = FALLBACK_IMAGE; }} /><div><b>{item.name}</b><span>수량 {item.qty || item.quantity}개</span></div><strong>{((item.price || order.totalPrice) * (item.qty || item.quantity || 1)).toLocaleString()}원</strong></article>)}
+            {(order.items || []).map((item, index) => <article className={styles.item} key={index}><img src={item.image || item.imageUrl || FALLBACK_IMAGE} alt="" onError={e => { e.currentTarget.src = FALLBACK_IMAGE; }} /><div><b>{item.productName || item.name}</b><span>수량 {item.quantity || item.qty}개</span></div><strong>{(Number(item.price) * (item.quantity || item.qty || 1)).toLocaleString()}원</strong></article>)}
           </section>
           <section className={styles.section}>
             <h2>결제 정보</h2>
-            <dl><dt>결제 수단</dt><dd>신용/체크카드</dd><dt>배송비</dt><dd>무료</dd><dt>결제 금액</dt><dd className={styles.total}>{order.totalPrice.toLocaleString()}원</dd></dl>
+            <dl><dt>결제 수단</dt><dd>신용/체크카드</dd><dt>배송비</dt><dd>무료</dd>{order.usedPoint > 0 && <><dt>포인트 사용</dt><dd>{Number(order.usedPoint).toLocaleString()}P</dd></>}<dt>결제 금액</dt><dd className={styles.total}>{Number(order.totalPrice) === 0 && order.usedPoint > 0 ? '무료 (포인트 결제)' : `${Number(order.totalPrice).toLocaleString()}원`}</dd></dl>
           </section>
         </div>
         <div className={styles.buttons}><button className="btn-secondary" onClick={() => nav('/products')}>쇼핑 계속하기</button><button className="btn-primary" onClick={() => nav('/mypage')}>주문 내역 보기</button>{!isCancelled && order.status !== 'COMPLETED' && <button className={styles.cancel} onClick={() => show('주문 취소 접수가 완료되었습니다.', 'info')}>주문 취소</button>}</div>

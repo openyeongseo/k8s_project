@@ -39,7 +39,7 @@ export default function ProductCard({ product }) {
           {discount && <span className={styles.discount}>{discount}%</span>}
         </div>
         <button className={`${styles.wish} ${wished ? styles.wished : ''}`} onClick={handleWish} aria-label="찜하기">
-          <svg viewBox="0 0 24 24"><path d="M20.8 4.8a5.4 5.4 0 0 0-7.6 0L12 6l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.6a5.4 5.4 0 0 0 0-7.6Z" /></svg>
+          <svg viewBox="0 0 24 24" fill={wished ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.8a5.4 5.4 0 0 0-7.6 0L12 6l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.6a5.4 5.4 0 0 0 0-7.6Z" /></svg>
         </button>
         <div className={styles.quick}><button onClick={handleCart}>장바구니 담기</button></div>
       </div>

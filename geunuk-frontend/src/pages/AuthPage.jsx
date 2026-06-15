@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, useToast } from '../store';
 import styles from './AuthPage.module.css';
+
+const GOOGLE_CLIENT_ID = '432897033576-aq8h3043q9159rklpkoire5okh1r55ku.apps.googleusercontent.com';
 
 const GOOGLE_ICON = (
   <svg viewBox="0 0 24 24" width="20" height="20">
@@ -14,6 +16,47 @@ const GOOGLE_ICON = (
 
 const API = '/api/auth';
 
+function useGoogleLogin(onSuccess, onError) {
+  useEffect(() => {
+    const initGoogle = () => {
+      if (!window.google) return;
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: async (response) => {
+          try {
+            const res = await fetch(`${API}/oauth2/google`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ idToken: response.credential })
+            });
+            const data = await res.json();
+            if (!res.ok) { onError(data.message || '구글 로그인 실패'); return; }
+            onSuccess(data.data);
+          } catch {
+            onError('서버 오류가 발생했습니다.');
+          }
+        }
+      });
+    };
+
+    if (window.google) {
+      initGoogle();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google) { initGoogle(); clearInterval(interval); }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [onSuccess, onError]);
+
+  const openPopup = () => {
+    if (!window.google) { onError('Google 로그인을 불러오는 중입니다. 잠시 후 다시 시도해주세요.'); return; }
+    window.google.accounts.id.prompt();
+  };
+
+  return { openPopup };
+}
+
 export function LoginPage() {
   const nav = useNavigate();
   const { login } = useAuth();
@@ -21,6 +64,20 @@ export function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const set = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleGoogleSuccess = (data) => {
+    login({
+      id: data?.userId,
+      name: data?.username || '구글 사용자',
+      email: data?.email || '',
+      accessToken: data?.accessToken,
+      role: 'USER'
+    });
+    show('구글 로그인되었습니다.');
+    nav('/');
+  };
+
+  const { openPopup } = useGoogleLogin(handleGoogleSuccess, (msg) => show(msg, 'error'));
 
   const loginAs = async () => {
     if (!form.email || !form.password) { show('이메일과 비밀번호를 입력해주세요.', 'error'); return; }
@@ -33,12 +90,12 @@ export function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) { show(data.message || '이메일 또는 비밀번호가 틀렸습니다.', 'error'); return; }
-      login({ 
+      login({
         id: data.data?.userId,
-        name: data.data?.name || form.email.split('@')[0],
-        email: form.email, 
-        accessToken: data.data?.accessToken, 
-        role: 'USER' 
+        name: data.data?.username || form.email.split('@')[0],
+        email: form.email,
+        accessToken: data.data?.accessToken,
+        role: 'USER'
       });
       show('로그인되었습니다.');
       nav('/');
@@ -58,7 +115,7 @@ export function LoginPage() {
       <section className={styles.box}>
         <div className={styles.brand}>근육캐치<small>MUSCLE CATCH</small></div>
         <h1>로그인</h1>
-        <button className={styles.googleLogin} onClick={() => show('Google 소셜 로그인은 준비 중입니다.', 'error')}>
+        <button className={styles.googleLogin} onClick={openPopup}>
           {GOOGLE_ICON} Google로 로그인
         </button>
         <div className={styles.divider}><span>또는</span></div>
@@ -87,6 +144,20 @@ export function SignupPage() {
   const [loading, setLoading] = useState(false);
   const set = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
+  const handleGoogleSuccess = (data) => {
+    login({
+      id: data?.userId,
+      name: data?.username || '구글 사용자',
+      email: data?.email || '',
+      accessToken: data?.accessToken,
+      role: 'USER'
+    });
+    show('구글로 가입/로그인되었습니다. 100,000P가 지급되었습니다.');
+    nav('/');
+  };
+
+  const { openPopup } = useGoogleLogin(handleGoogleSuccess, (msg) => show(msg, 'error'));
+
   const join = async () => {
     if (!form.name || !form.email || !form.password) { show('이름, 이메일, 비밀번호를 입력해주세요.', 'error'); return; }
     setLoading(true);
@@ -111,7 +182,7 @@ export function SignupPage() {
         <div className={styles.brand}>근육캐치<small>MUSCLE CATCH</small></div>
         <h1>회원가입</h1>
         <p className={styles.benefit}>가입 즉시 <b>100,000P</b> 지급</p>
-        <button className={styles.googleLogin} onClick={() => show('Google 소셜 로그인은 준비 중입니다.', 'error')}>
+        <button className={styles.googleLogin} onClick={openPopup}>
           {GOOGLE_ICON} Google로 가입하기
         </button>
         <div className={styles.divider}><span>또는</span></div>
