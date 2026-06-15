@@ -12,18 +12,10 @@ export default function OrderPage() {
   const { setCartCount } = useCart();
   const items = location.state?.items || [];
 
-  const [pointBalance, setPointBalance] = useState(null); // null = 미조회
-  const [form, setForm] = useState({
-    receiverName: user?.name || '',
-    receiverPhone: user?.phone || '',
-    deliveryAddress: user?.address || '',
-    deliveryMemo: '문 앞에 놓아주세요',
-    usedPoint: 0,
-    payment: 'card',
-  });
+  const [pointBalance, setPointBalance] = useState(null);
+  const [usedPoint, setUsedPoint] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // 포인트 잔액 조회 (최초 1회)
   React.useEffect(() => {
     if (!user?.id) return;
     fetch('/api/points/balance', {
@@ -36,16 +28,11 @@ export default function OrderPage() {
 
   const availablePoint = pointBalance ?? 0;
   const subTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const delivery = subTotal >= 50000 ? 0 : 3000;
-  const point = Math.min(Number(form.usedPoint) || 0, availablePoint, subTotal + delivery);
-  const finalTotal = Math.max(0, subTotal + delivery - point);
-  const set = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const point = Math.min(Number(usedPoint) || 0, availablePoint, subTotal);
+  const finalTotal = Math.max(0, subTotal - point);
 
   const submit = () => {
     if (!items.length) { show('주문 상품이 없습니다.', 'error'); return; }
-    if (!form.receiverName || !form.receiverPhone || !form.deliveryAddress) {
-      show('배송 정보를 입력해주세요.', 'error'); return;
-    }
     setLoading(true);
 
     fetch('/api/orders', {
@@ -62,9 +49,9 @@ export default function OrderPage() {
           price: item.price,
           quantity: item.quantity,
         })),
-        receiverName: form.receiverName,
-        receiverPhone: form.receiverPhone,
-        deliveryAddress: form.deliveryAddress,
+        receiverName: user?.name || '수령인',
+        receiverPhone: '010-0000-0000',
+        deliveryAddress: '미입력',
         usedPoint: point,
       }),
     })
@@ -99,7 +86,7 @@ export default function OrderPage() {
             {items.length ? items.map(item => (
               <article className={styles.item} key={item.productId}>
                 <img src={item.image} alt="" onError={e => { e.currentTarget.src = FALLBACK_IMAGE; }} />
-                <div><b>{item.productName}</b><span>기본 구성 / 수량 {item.quantity}개</span></div>
+                <div><b>{item.productName}</b><span>수량 {item.quantity}개</span></div>
                 <strong>{(item.price * item.quantity).toLocaleString()}원</strong>
               </article>
             )) : (
@@ -107,37 +94,18 @@ export default function OrderPage() {
             )}
           </section>
           <section className={styles.section}>
-            <h2>배송 정보</h2>
-            <div className={styles.twoCols}>
-              <div className="form-group"><label className="form-label">수령인</label><input className="form-input" name="receiverName" value={form.receiverName} onChange={set} /></div>
-              <div className="form-group"><label className="form-label">연락처</label><input className="form-input" name="receiverPhone" placeholder="010-0000-0000" value={form.receiverPhone} onChange={set} /></div>
-            </div>
-            <div className="form-group"><label className="form-label">배송 주소</label><input className="form-input" name="deliveryAddress" value={form.deliveryAddress} onChange={set} /></div>
-            <div className="form-group">
-              <label className="form-label">배송 메모</label>
-              <select className="form-input" name="deliveryMemo" value={form.deliveryMemo} onChange={set}>
-                <option>문 앞에 놓아주세요</option>
-                <option>배송 전 연락 바랍니다</option>
-                <option>경비실에 맡겨주세요</option>
-              </select>
-            </div>
-          </section>
-          <section className={styles.section}>
             <h2>포인트 사용</h2>
             <div className={styles.point}>
               <span>사용 가능 포인트 <b>{availablePoint.toLocaleString()}P</b></span>
-              <input className="form-input" type="number" name="usedPoint" min="0" max={availablePoint} value={form.usedPoint} onChange={set} />
-              <button onClick={() => setForm(prev => ({ ...prev, usedPoint: availablePoint }))}>전액 사용</button>
-            </div>
-          </section>
-          <section className={styles.section}>
-            <h2>결제 수단</h2>
-            <div className={styles.payments}>
-              {[['card', '신용/체크카드'], ['kakao', '카카오페이'], ['naver', '네이버페이'], ['bank', '무통장입금']].map(([value, text]) => (
-                <label className={form.payment === value ? styles.paymentActive : ''} key={value}>
-                  <input type="radio" name="payment" value={value} checked={form.payment === value} onChange={set} />{text}
-                </label>
-              ))}
+              <input
+                className="form-input"
+                type="number"
+                min="0"
+                max={availablePoint}
+                value={usedPoint}
+                onChange={e => setUsedPoint(e.target.value)}
+              />
+              <button onClick={() => setUsedPoint(Math.min(availablePoint, subTotal))}>전액 사용</button>
             </div>
           </section>
         </div>
@@ -145,14 +113,13 @@ export default function OrderPage() {
           <h2>최종 결제 금액</h2>
           <dl>
             <dt>상품 금액</dt><dd>{subTotal.toLocaleString()}원</dd>
-            <dt>배송비</dt><dd>{delivery ? `${delivery.toLocaleString()}원` : '무료'}</dd>
-            <dt>포인트 사용</dt><dd className={styles.deduct}>-{point.toLocaleString()}원</dd>
+            <dt>포인트 사용</dt><dd className={styles.deduct}>-{point.toLocaleString()}P</dd>
           </dl>
           <div className={styles.final}><span>총 결제금액</span><strong>{finalTotal.toLocaleString()}원</strong></div>
           <button className="btn-primary" onClick={submit} disabled={loading || !items.length}>
             {loading ? '결제 처리 중...' : `${finalTotal.toLocaleString()}원 결제하기`}
           </button>
-          <p className={styles.notice}>결제 버튼 클릭 시 주문 정보와 결제 동의가 처리됩니다.</p>
+          <p className={styles.notice}>결제 버튼 클릭 시 주문 정보와 포인트 사용이 처리됩니다.</p>
         </aside>
       </div>
     </div>

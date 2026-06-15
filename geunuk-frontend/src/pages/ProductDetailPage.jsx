@@ -26,8 +26,6 @@ export default function ProductDetailPage() {
   // 리뷰
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ rating: 5, content: '' });
-  const [showReviewForm, setShowReviewForm] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -85,45 +83,6 @@ export default function ProductDetailPage() {
     if (t === '리뷰') loadReviews();
   };
 
-  // 리뷰 등록
-  const submitReview = () => {
-    if (!reviewForm.content.trim()) { show('리뷰 내용을 입력해주세요.', 'error'); return; }
-    fetch('/api/reviews', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-User-Id': String(user?.id || ''),
-        'Authorization': `Bearer ${user?.accessToken || ''}`,
-      },
-      body: JSON.stringify({ productId: Number(id), rating: reviewForm.rating, content: reviewForm.content }),
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success !== false) {
-          show('리뷰가 등록되었습니다.');
-          setShowReviewForm(false);
-          setReviewForm({ rating: 5, content: '' });
-          loadReviews();
-        } else {
-          show(data.message || '리뷰 등록에 실패했습니다.', 'error');
-        }
-      })
-      .catch(() => show('서버 오류가 발생했습니다.', 'error'));
-  };
-
-  // 리뷰 삭제
-  const deleteReview = (reviewId) => {
-    fetch(`/api/reviews/${reviewId}`, {
-      method: 'DELETE',
-      headers: {
-        'X-User-Id': String(user?.id || ''),
-        'Authorization': `Bearer ${user?.accessToken || ''}`,
-      },
-    })
-      .then(r => r.json())
-      .then(() => { show('리뷰가 삭제되었습니다.'); loadReviews(); })
-      .catch(() => show('서버 오류가 발생했습니다.', 'error'));
-  };
 
   if (loading) return <div className={styles.notFound}>불러오는 중...</div>;
   if (!product) return (
@@ -245,40 +204,12 @@ export default function ProductDetailPage() {
                   <b>{review.userName || `사용자 ${review.userId}`}</b>
                   <time>{new Date(review.reviewDate || review.createdAt).toLocaleDateString('ko-KR')}</time>
                   <p>{review.content}</p>
-                  {loggedIn && user?.id === review.userId && (
-                    <button onClick={() => deleteReview(review.id)} style={{ fontSize: 11, color: 'var(--red)' }}>삭제</button>
-                  )}
                 </article>
               ))
             ) : (
               <p>아직 작성된 리뷰가 없습니다.</p>
             )}
 
-            {loggedIn && (
-              showReviewForm ? (
-                <div className={styles.reviewForm}>
-                  <div>
-                    <label>별점: </label>
-                    <select value={reviewForm.rating} onChange={e => setReviewForm(p => ({ ...p, rating: Number(e.target.value) }))}>
-                      {[5,4,3,2,1].map(n => <option key={n} value={n}>{n}점</option>)}
-                    </select>
-                  </div>
-                  <textarea
-                    className="form-input"
-                    placeholder="리뷰를 작성해주세요."
-                    rows={4}
-                    value={reviewForm.content}
-                    onChange={e => setReviewForm(p => ({ ...p, content: e.target.value }))}
-                  />
-                  <div>
-                    <button className="btn-primary" onClick={submitReview}>등록</button>
-                    <button className="btn-secondary" onClick={() => setShowReviewForm(false)}>취소</button>
-                  </div>
-                </div>
-              ) : (
-                <button className="btn-secondary" onClick={() => setShowReviewForm(true)}>리뷰 작성</button>
-              )
-            )}
           </div>
         )}
 

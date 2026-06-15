@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FALLBACK_IMAGE, MOCK_PRODUCTS } from '../data/mock';
+import { FALLBACK_IMAGE } from '../data/mock';
 import ProductCard from '../components/common/ProductCard';
 import styles from './HomePage.module.css';
 
@@ -12,8 +12,28 @@ const FEATURED_CATEGORIES = [
 
 export default function HomePage() {
   const nav = useNavigate();
-  const popular = MOCK_PRODUCTS.filter(p => ['BEST', 'SALE'].includes(p.badge)).slice(0, 4);
-  const recommended = MOCK_PRODUCTS.filter(p => ['NEW', 'HOT'].includes(p.badge)).slice(0, 4);
+  const [popular, setPopular] = useState([]);
+  const [recommended, setRecommended] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/products?page=0&size=8')
+      .then(r => r.json())
+      .then(data => {
+        const list = (data.data?.products || []).map(p => ({
+          id: p.id,
+          name: p.name,
+          brand: p.brand,
+          price: Number(p.price),
+          originalPrice: Number(p.originalPrice),
+          category: p.category,
+          image: p.imageUrl,
+        }));
+        setPopular(list.slice(0, 4));
+        setRecommended(list.slice(4, 8));
+      })
+      .catch(() => {});
+  }, []);
+
   const shopCategory = category => nav(`/products?category=${encodeURIComponent(category)}`);
 
   return (
@@ -45,13 +65,15 @@ export default function HomePage() {
         <span>FITNESS & GYM</span><i /> <span>HOME TRAINING</span><i /> <span>HEALTH STRATEGY</span><i /> <span>RECOVERY GOODS</span><i /> <span>NEW ARRIVAL</span>
       </div>
 
-      <section className={styles.products}>
-        <div className={styles.sectionTitle}>
-          <div><p>BEST COLLECTION</p><h2>인기 상품</h2></div>
-          <button onClick={() => nav('/products?sort=인기순')}>전체 보기 →</button>
-        </div>
-        <div className={styles.grid}>{popular.map(product => <ProductCard key={product.id} product={product} />)}</div>
-      </section>
+      {popular.length > 0 && (
+        <section className={styles.products}>
+          <div className={styles.sectionTitle}>
+            <div><p>BEST COLLECTION</p><h2>인기 상품</h2></div>
+            <button onClick={() => nav('/products?sort=인기순')}>전체 보기 →</button>
+          </div>
+          <div className={styles.grid}>{popular.map(product => <ProductCard key={product.id} product={product} />)}</div>
+        </section>
+      )}
 
       <section className={styles.strategy}>
         <div className={styles.strategyPhoto} />
@@ -63,13 +85,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={styles.products}>
-        <div className={styles.sectionTitle}>
-          <div><p>NEW & CURATED</p><h2>추천 상품</h2></div>
-          <button onClick={() => nav('/products')}>더 보기 →</button>
-        </div>
-        <div className={styles.grid}>{recommended.map(product => <ProductCard key={product.id} product={product} />)}</div>
-      </section>
+      {recommended.length > 0 && (
+        <section className={styles.products}>
+          <div className={styles.sectionTitle}>
+            <div><p>NEW & CURATED</p><h2>추천 상품</h2></div>
+            <button onClick={() => nav('/products')}>더 보기 →</button>
+          </div>
+          <div className={styles.grid}>{recommended.map(product => <ProductCard key={product.id} product={product} />)}</div>
+        </section>
+      )}
 
       <section className={styles.joinBanner}>
         <div><p>NEW MEMBER BENEFIT</p><h2>회원가입 즉시 <strong>100,000P</strong></h2><span>장비 구매 시 바로 사용할 수 있는 신규 회원 혜택</span></div>
