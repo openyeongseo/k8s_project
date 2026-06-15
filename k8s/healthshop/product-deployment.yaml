@@ -24,7 +24,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: product-service
-          image: 192.168.0.13/k8s_project/product-service:v1.0-111
+          image: 192.168.0.13/k8s_project/product-service:v1.0-112
           ports:
             - containerPort: 8082
           env:
