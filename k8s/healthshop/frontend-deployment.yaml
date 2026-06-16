@@ -24,7 +24,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: geunuk-frontend
-          image: openyeongseo/geunuk-frontend:빌드전_정상태그
+          image: openyeongseo/geunuk-frontend:v1.0-158
           ports:
             - containerPort: 80
           resources:
