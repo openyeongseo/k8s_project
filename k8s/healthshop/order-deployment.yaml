@@ -39,7 +39,7 @@ spec:
             - name: JAVA_TOOL_OPTIONS
               value: "-Dkafka.enabled=true"
             - name: SPRING_KAFKA_LISTENER_AUTO_STARTUP
-              value: "true"
+              value: "false"
           resources:
             requests:
               cpu: "250m"
