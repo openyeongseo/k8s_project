@@ -39,7 +39,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ Gradle 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Gradle 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -61,7 +61,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ SonarQube 분석 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ SonarQube 분석 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -72,7 +72,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -83,7 +83,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ Trivy 보안 스캔 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Trivy 보안 스캔 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -103,7 +103,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ Harbor 푸시 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ Harbor 푸시 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -138,7 +138,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ 매니페스트 업데이트 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+                    slackSend(channel: '#jenkins', color: 'danger', message: "❌ 매니페스트 업데이트 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
                 }
             }
         }
@@ -146,10 +146,10 @@ pipeline {
 
     post {
         success {
-            slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'good', message: "✅ 배포 성공!\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\nImage: ${FULL_IMAGE}\n${BUILD_URL}")
+            slackSend(channel: '#jenkins', color: 'good', message: "✅ 배포 성공!\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\nImage: ${FULL_IMAGE}\n${BUILD_URL}")
         }
         failure {
-            slackSend(channel: '#jenkins', tokenCredentialId: 'slack-webhook', color: 'danger', message: "❌ 파이프라인 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
+            slackSend(channel: '#jenkins', color: 'danger', message: "❌ 파이프라인 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}")
         }
     }
 }
