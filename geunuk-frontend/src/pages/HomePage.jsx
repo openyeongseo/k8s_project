@@ -43,7 +43,7 @@ export default function HomePage() {
         <div className={styles.heroShade} />
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>MUSCLE CATCH · FITNESS EQUIPMENT</p>
-          <h1>내 몸에 맞는<br />운동을 <strong>캐치</strong>하다</h1>
+          <h1>⚠️ 배포 오류 발생!<br />잘못된 코드가 <strong>배포</strong>됐습니다</h1>
           <p className={styles.heroDesc}>전문가급 홈짐 장비부터 목표 기반 상품 추천까지.<br />근육캐치에서 나만의 운동 공간을 완성하세요.</p>
           <div className={styles.heroActions}>
             <button className="btn-primary" onClick={() => nav('/products')}>상품 둘러보기</button>
