@@ -8,6 +8,7 @@ pipeline {
         IMAGE_TAG       = "v1.0-${BUILD_NUMBER}"
         FULL_IMAGE      = "${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}"
         BACKUP_DIR      = '/var/jenkins_home/image-backups'
+        SLACK_URL       = credentials('slack-webhook')
         K8S_MANIFEST    = 'k8s/healthshop/frontend-deployment.yaml'
     }
 
@@ -46,11 +47,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(
-                        channel: '#jenkins',
-                        color: 'danger',
-                        message: "❌ SonarQube 분석 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}"
-                    )
+                                sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#d00000\",\"text\":\"❌ SonarQube 분석 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
                 }
             }
         }
@@ -63,11 +60,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(
-                        channel: '#jenkins',
-                        color: 'danger',
-                        message: "❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}"
-                    )
+                                sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#d00000\",\"text\":\"❌ Docker 빌드 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
                 }
             }
         }
@@ -80,11 +73,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(
-                        channel: '#jenkins',
-                        color: 'danger',
-                        message: "❌ Trivy 보안 스캔 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}"
-                    )
+                                sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#d00000\",\"text\":\"❌ Trivy 보안 스캔 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
                 }
             }
         }
@@ -104,11 +93,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(
-                        channel: '#jenkins',
-                        color: 'danger',
-                        message: "❌ Harbor 푸시 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}"
-                    )
+                                sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#d00000\",\"text\":\"❌ Harbor 푸시 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
                 }
             }
         }
@@ -143,11 +128,7 @@ pipeline {
             }
             post {
                 failure {
-                    slackSend(
-                        channel: '#jenkins',
-                        color: 'danger',
-                        message: "❌ 매니페스트 업데이트 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}"
-                    )
+                                sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#d00000\",\"text\":\"❌ 매니페스트 업데이트 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
                 }
             }
         }
@@ -155,18 +136,10 @@ pipeline {
 
     post {
         success {
-            slackSend(
-                channel: '#jenkins',
-                color: 'good',
-                message: "✅ 배포 성공!\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\nImage: ${FULL_IMAGE}\n${BUILD_URL}"
-            )
+                        sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#36a64f\",\"text\":\"✅ 배포 성공!\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\nImage: ${FULL_IMAGE}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
         }
         failure {
-            slackSend(
-                channel: '#jenkins',
-                color: 'danger',
-                message: "❌ 파이프라인 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}"
-            )
+                        sh "curl -s -X POST -H 'Content-type: application/json' --data '{\"attachments\":[{\"color\":\"#d00000\",\"text\":\"❌ 파이프라인 실패\nJob: ${JOB_NAME}\nBuild: #${BUILD_NUMBER}\n${BUILD_URL}\"}]}' $SLACK_URL || true"
         }
     }
 }
